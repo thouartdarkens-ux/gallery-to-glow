@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Search, Bell, LogOut, LayoutDashboard, Award, Settings as SettingsIcon, LifeBuoy } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -7,210 +7,11 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
-import { z } from "zod";
-
-const profileSchema = z.object({
-  full_name: z.string().trim().min(1, "Name is required").max(100, "Name must be less than 100 characters"),
-  email: z.string().trim().email("Invalid email address").max(255, "Email must be less than 255 characters"),
-  avatar_url: z.string().url("Invalid URL").optional().or(z.literal("")),
-});
-
-const passwordSchema = z.object({
-  currentPassword: z.string().min(1, "Current password is required"),
-  newPassword: z.string().min(8, "Password must be at least 8 characters"),
-  confirmPassword: z.string().min(1, "Please confirm your password"),
-}).refine((data) => data.newPassword === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const Settings = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
   const [activeNav, setActiveNav] = useState("settings");
-  const [currentUser, setCurrentUser] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  
-  // Profile form state
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [avatarUrl, setAvatarUrl] = useState("");
-  
-  // Password form state
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  
-  // Preferences state
-  const [emailNotifications, setEmailNotifications] = useState(true);
-  const [promotionalOffers, setPromotionalOffers] = useState(false);
-  const [recommendations, setRecommendations] = useState(true);
-  const [twoFactorEnabled, setTwoFactorEnabled] = useState(true);
-
-  useEffect(() => {
-    const loadUserData = async () => {
-      try {
-        const userData = localStorage.getItem('currentUser');
-        if (!userData) {
-          navigate("/login");
-          return;
-        }
-
-        const user = JSON.parse(userData);
-
-        // Fetch updated user data from database
-        const { data: currentUserData, error: userError } = await supabase
-          .from('users')
-          .select('*')
-          .eq('id', user.id)
-          .single();
-
-        if (userError) throw userError;
-        
-        setCurrentUser(currentUserData);
-        setFullName(currentUserData.full_name || "");
-        setEmail(currentUserData.email || "");
-        setAvatarUrl(currentUserData.avatar_url || "");
-
-      } catch (error: any) {
-        console.error('Error loading data:', error);
-        toast({
-          title: "Error",
-          description: "Failed to load user data",
-          variant: "destructive",
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadUserData();
-  }, [navigate, toast]);
-
-  const handleProfileSave = async () => {
-    try {
-      setSaving(true);
-      
-      // Validate profile data
-      const validatedData = profileSchema.parse({
-        full_name: fullName,
-        email: email,
-        avatar_url: avatarUrl || "",
-      });
-
-      // Update user in database
-      const { error } = await supabase
-        .from('users')
-        .update({
-          full_name: validatedData.full_name,
-          email: validatedData.email,
-          avatar_url: validatedData.avatar_url || null,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', currentUser.id);
-
-      if (error) throw error;
-
-      // Update localStorage
-      const updatedUser = { ...currentUser, full_name: validatedData.full_name, email: validatedData.email, avatar_url: validatedData.avatar_url };
-      localStorage.setItem('currentUser', JSON.stringify(updatedUser));
-      setCurrentUser(updatedUser);
-
-      toast({
-        title: "Success",
-        description: "Profile updated successfully",
-      });
-    } catch (error: any) {
-      if (error instanceof z.ZodError) {
-        toast({
-          title: "Validation Error",
-          description: error.errors[0].message,
-          variant: "destructive",
-        });
-      } else {
-        toast({
-          title: "Error",
-          description: error.message || "Failed to update profile",
-          variant: "destructive",
-        });
-      }
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handlePasswordChange = async () => {
-    try {
-      setSaving(true);
-
-      // Validate password data
-      const validatedData = passwordSchema.parse({
-        currentPassword,
-        newPassword,
-        confirmPassword,
-      });
-
-      // Verify current password
-      const { data: userData } = await supabase
-        .from('users')
-        .select('password')
-        .eq('id', currentUser.id)
-        .single();
-
-      if (userData?.password !== validatedData.currentPassword) {
-        throw new Error("Current password is incorrect");
-      }
-
-      // Update password
-      const { error } = await supabase
-        .from('users')
-        .update({
-          password: validatedData.newPassword,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', currentUser.id);
-
-      if (error) throw error;
-
-      // Clear password fields
-      setCurrentPassword("");
-      setNewPassword("");
-      setConfirmPassword("");
-
-      toast({
-        title: "Success",
-        description: "Password changed successfully",
-      });
-    } catch (error: any) {
-      if (error instanceof z.ZodError) {
-        toast({
-          title: "Validation Error",
-          description: error.errors[0].message,
-          variant: "destructive",
-        });
-      } else {
-        toast({
-          title: "Error",
-          description: error.message || "Failed to change password",
-          variant: "destructive",
-        });
-      }
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem('currentUser');
-    navigate("/login");
-  };
-
-  if (loading || !currentUser) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
-  }
 
   return (
     <div className="min-h-screen flex bg-background">
@@ -351,10 +152,45 @@ const Settings = () => {
                   <Input type="password" defaultValue="**********" />
                 </div>
 
+                <div className="space-y-2">
+                  <Label>Date of Birth</Label>
+                  <Select defaultValue="1990-01-25">
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1990-01-25">25 January 1990</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Present Address</Label>
+                  <Input defaultValue="Adenta, Accra, GH" />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Permanent Address</Label>
+                  <Input defaultValue="Adenta, Accra, GH" />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>City</Label>
+                  <Input defaultValue="Lakeside" />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Postal Code</Label>
+                  <Input defaultValue="00233" />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Country</Label>
+                  <Input defaultValue="GHANA" />
+                </div>
+
                 <div className="md:col-span-2 flex justify-end">
-                  <Button size="lg" className="px-12" onClick={handleProfileSave} disabled={saving}>
-                    {saving ? "Saving..." : "Save"}
-                  </Button>
+                  <Button size="lg" className="px-12">Save</Button>
                 </div>
               </div>
             </TabsContent>
