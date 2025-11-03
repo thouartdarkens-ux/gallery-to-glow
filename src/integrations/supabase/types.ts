@@ -16,31 +16,58 @@ export type Database = {
     Tables: {
       users: {
         Row: {
+          accumulated_points: number
+          avatar_url: string | null
           created_at: string | null
+          deducted_points: number
           email: string
           full_name: string | null
           id: string
+          level: string | null
           password: string
+          pending_points: number
+          rank: number
           reference_code: string
+          referrals_count: number
+          total_points: number
           updated_at: string | null
+          verified: boolean
         }
         Insert: {
+          accumulated_points?: number
+          avatar_url?: string | null
           created_at?: string | null
+          deducted_points?: number
           email: string
           full_name?: string | null
           id?: string
+          level?: string | null
           password: string
+          pending_points?: number
+          rank?: number
           reference_code: string
+          referrals_count?: number
+          total_points?: number
           updated_at?: string | null
+          verified?: boolean
         }
         Update: {
+          accumulated_points?: number
+          avatar_url?: string | null
           created_at?: string | null
+          deducted_points?: number
           email?: string
           full_name?: string | null
           id?: string
+          level?: string | null
           password?: string
+          pending_points?: number
+          rank?: number
           reference_code?: string
+          referrals_count?: number
+          total_points?: number
           updated_at?: string | null
+          verified?: boolean
         }
         Relationships: []
       }

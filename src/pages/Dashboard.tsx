@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Search, Bell, LogOut, LayoutDashboard, Award, Settings, LifeBuoy, TrendingUp, TrendingDown, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -6,30 +6,79 @@ import { Input } from "@/components/ui/input";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [activeNav, setActiveNav] = useState("overview");
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [leaderboard, setLeaderboard] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const stats = [
-    { label: "Accumulated points", value: "7235", change: "+18%", trend: "up" },
-    { label: "Deducted points", value: "0", change: "0%", trend: "neutral" },
-    { label: "Total points", value: "7235", change: "+25%", trend: "up" },
-    { label: "Pending points", value: "17", change: "+8%", trend: "up" },
-  ];
+  useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        // Get current user from localStorage
+        const userData = localStorage.getItem('currentUser');
+        if (!userData) {
+          navigate("/login");
+          return;
+        }
 
-  const leaderboard = [
-    { name: "Charles Oneli", points: 7500, rank: 1, verified: true },
-    { name: "Sylvia Omene", points: 6500, rank: 2, verified: false },
-    { name: "Hajia Husseini", points: 6000, rank: 4, verified: true },
-    { name: "Jeffrey Appiah", points: 5000, rank: 5, verified: true },
-    { name: "Henry Aziale", points: 4500, rank: 6, verified: true },
-  ];
+        const user = JSON.parse(userData);
+
+        // Fetch updated user data from database
+        const { data: currentUserData, error: userError } = await supabase
+          .from('users')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+
+        if (userError) throw userError;
+        setCurrentUser(currentUserData);
+
+        // Fetch leaderboard data (all users sorted by total_points)
+        const { data: leaderboardData, error: leaderboardError } = await supabase
+          .from('users')
+          .select('*')
+          .order('total_points', { ascending: false })
+          .limit(10);
+
+        if (leaderboardError) throw leaderboardError;
+        setLeaderboard(leaderboardData || []);
+
+      } catch (error: any) {
+        console.error('Error loading data:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load user data",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadUserData();
+  }, [navigate, toast]);
 
   const waitlistMembers = [
     { email: "gra*********@gmail.com...", joinDate: "30th June,2026", code: "HW26ZXCG" },
     { email: "be**********@gmail.com...", joinDate: "21st April,2026", code: "HW26ZXCG" },
     { email: "ju**********@gmail.com...", joinDate: "17th October,2026", code: "HW26ZXCG" },
+  ];
+
+  if (loading || !currentUser) {
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  }
+
+  const stats = [
+    { label: "Accumulated points", value: currentUser.accumulated_points.toString(), change: "+18%", trend: "up" },
+    { label: "Deducted points", value: currentUser.deducted_points.toString(), change: "0%", trend: "neutral" },
+    { label: "Total points", value: currentUser.total_points.toString(), change: "+25%", trend: "up" },
+    { label: "Pending points", value: currentUser.pending_points.toString(), change: "+8%", trend: "up" },
   ];
 
   return (
@@ -122,7 +171,7 @@ const Dashboard = () => {
         <header className="bg-card border-b sticky top-0 z-10">
           <div className="flex items-center justify-between px-8 py-4">
             <div>
-              <h1 className="text-2xl font-bold text-foreground">Welcome Back, Reese</h1>
+              <h1 className="text-2xl font-bold text-foreground">Welcome Back, {currentUser.full_name?.split(' ')[0] || 'User'}</h1>
               <p className="text-sm text-muted-foreground">Here's what it looks like today</p>
             </div>
             <div className="flex items-center gap-4">
@@ -135,8 +184,8 @@ const Dashboard = () => {
                 <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-destructive rounded-full"></span>
               </Button>
               <Avatar>
-                <AvatarImage src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop" />
-                <AvatarFallback>GR</AvatarFallback>
+                <AvatarImage src={currentUser.avatar_url} />
+                <AvatarFallback>{currentUser.full_name?.slice(0, 2).toUpperCase() || 'U'}</AvatarFallback>
               </Avatar>
             </div>
           </div>
@@ -177,37 +226,37 @@ const Dashboard = () => {
               <CardContent className="pt-6">
                 <div className="flex items-start gap-6">
                   <Avatar className="h-24 w-24">
-                    <AvatarImage src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop" />
-                    <AvatarFallback>GR</AvatarFallback>
+                    <AvatarImage src={currentUser.avatar_url} />
+                    <AvatarFallback>{currentUser.full_name?.slice(0, 2).toUpperCase() || 'U'}</AvatarFallback>
                   </Avatar>
                   <div className="flex-1 space-y-4">
                     <div className="flex items-center gap-2">
-                      <h3 className="text-xl font-bold">Grant Reese Arthur</h3>
-                      <CheckCircle2 className="h-5 w-5 text-primary" />
+                      <h3 className="text-xl font-bold">{currentUser.full_name}</h3>
+                      {currentUser.verified && <CheckCircle2 className="h-5 w-5 text-primary" />}
                       <img src="https://images.unsplash.com/photo-1578301978018-3005759f48f7?w=32&h=32&fit=crop" alt="Badge" className="h-6 w-6" />
                     </div>
                     <div className="grid grid-cols-3 gap-6">
                       <div>
                         <p className="text-xs text-muted-foreground uppercase">Referral ID</p>
-                        <p className="text-lg font-semibold text-primary">7201986</p>
+                        <p className="text-lg font-semibold text-primary">{currentUser.reference_code}</p>
                       </div>
                       <div>
                         <p className="text-xs text-muted-foreground uppercase">Points</p>
-                        <p className="text-lg font-semibold">7235</p>
+                        <p className="text-lg font-semibold">{currentUser.total_points}</p>
                       </div>
                       <div>
                         <p className="text-xs text-muted-foreground uppercase">Referrals</p>
-                        <p className="text-lg font-semibold">12</p>
+                        <p className="text-lg font-semibold">{currentUser.referrals_count}</p>
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-6 pt-2">
                       <div>
                         <p className="text-xs text-muted-foreground uppercase">Level</p>
-                        <p className="text-base font-medium">Active Volunteer</p>
+                        <p className="text-base font-medium">{currentUser.level}</p>
                       </div>
                       <div>
                         <p className="text-xs text-muted-foreground uppercase">Rank</p>
-                        <p className="text-base font-medium">9th</p>
+                        <p className="text-base font-medium">{currentUser.rank}{currentUser.rank === 1 ? 'st' : currentUser.rank === 2 ? 'nd' : currentUser.rank === 3 ? 'rd' : 'th'}</p>
                       </div>
                     </div>
                   </div>
@@ -237,18 +286,18 @@ const Dashboard = () => {
               <CardContent>
                 <div className="space-y-3">
                   {leaderboard.slice(0, 5).map((user, index) => (
-                    <div key={index} className="flex items-center gap-3">
+                    <div key={user.id} className="flex items-center gap-3">
                       <div className="flex items-center gap-2 flex-1">
                         <Avatar className="h-8 w-8">
-                          <AvatarImage src={`https://images.unsplash.com/photo-${1500000000000 + index * 1000000}?w=100&h=100&fit=crop`} />
-                          <AvatarFallback>{user.name.slice(0, 2)}</AvatarFallback>
+                          <AvatarImage src={user.avatar_url} />
+                          <AvatarFallback>{user.full_name?.slice(0, 2).toUpperCase() || 'U'}</AvatarFallback>
                         </Avatar>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-1">
-                            <p className="text-sm font-medium truncate">{user.name}</p>
+                            <p className="text-sm font-medium truncate">{user.full_name}</p>
                             {user.verified && <CheckCircle2 className="h-3 w-3 text-primary flex-shrink-0" />}
                           </div>
-                          <p className="text-xs text-muted-foreground">{user.points} points</p>
+                          <p className="text-xs text-muted-foreground">{user.total_points} points</p>
                         </div>
                       </div>
                       <Badge variant="outline">{user.rank}</Badge>
