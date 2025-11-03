@@ -1,4 +1,3 @@
-import { useRef } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -14,15 +13,13 @@ import Dashboard from "./pages/Dashboard";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
+// Create QueryClient outside of component to avoid re-initialization
+const queryClient = new QueryClient();
+
 const App = () => {
-  const queryClientRef = useRef<QueryClient>();
-  
-  if (!queryClientRef.current) {
-    queryClientRef.current = new QueryClient();
-  }
 
   return (
-    <QueryClientProvider client={queryClientRef.current}>
+    <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster />
         <Sonner />
