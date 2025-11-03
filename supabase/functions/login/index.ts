@@ -1,5 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.78.0';
-import * as bcrypt from 'https://deno.land/x/bcrypt@v0.4.1/mod.ts';
+import { compare } from 'https://deno.land/x/bcrypt@v0.4.1/src/main.ts';
 import { create } from 'https://deno.land/x/djwt@v3.0.0/mod.ts';
 
 const corsHeaders = {
@@ -47,7 +47,7 @@ Deno.serve(async (req) => {
     }
 
     // Verify password
-    const passwordMatch = await bcrypt.compare(password, user.password_hash);
+    const passwordMatch = await compare(password, user.password_hash);
 
     if (!passwordMatch) {
       console.error('Password mismatch');
