@@ -1,10 +1,12 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowRight } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
@@ -12,6 +14,64 @@ const Login = () => {
   const [referenceCode, setReferenceCode] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+  const navigate = useNavigate();
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      // First, get the email associated with the reference code
+      const { data: profileData, error: profileError } = await supabase
+        .rpc('get_user_by_reference_code', { ref_code: referenceCode });
+
+      if (profileError || !profileData || profileData.length === 0) {
+        toast({
+          title: "Invalid credentials",
+          description: "The reference code you entered is incorrect.",
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      const email = profileData[0].email;
+
+      // Sign in with email and password
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (signInError) {
+        toast({
+          title: "Login failed",
+          description: signInError.message,
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      // Session persistence is handled automatically by Supabase
+      // The rememberMe state is already handled by the auth client config
+      toast({
+        title: "Welcome back!",
+        description: "You have successfully logged in.",
+      });
+
+      navigate("/dashboard");
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      });
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -47,7 +107,7 @@ const Login = () => {
           </div>
           
           <div className="bg-card p-8 rounded-lg shadow-xl border">
-            <div className="space-y-6">
+            <form onSubmit={handleLogin} className="space-y-6">
               <div className="space-y-2">
                 <h2 className="text-2xl font-bold">Login</h2>
                 <p className="text-sm text-muted-foreground">
@@ -96,8 +156,8 @@ const Login = () => {
                   </label>
                 </div>
                 
-                <Button className="w-full" size="lg">
-                  Sign in
+                <Button className="w-full" size="lg" type="submit" disabled={isLoading}>
+                  {isLoading ? "Signing in..." : "Sign in"}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
                 
@@ -110,13 +170,13 @@ const Login = () => {
                   <Link to="/terms" className="underline hover:text-foreground">
                     Terms of Service
                   </Link>{" "}
-                  and{" "}
-                  <Link to="/privacy" className="underline hover:text-foreground">
+                   and{" "}
+                   <Link to="/privacy" className="underline hover:text-foreground">
                     Privacy Policy
                   </Link>
                 </p>
               </div>
-            </div>
+            </form>
           </div>
         </div>
       </main>
