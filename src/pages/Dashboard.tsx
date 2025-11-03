@@ -47,7 +47,28 @@ const Dashboard = () => {
           .limit(10);
 
         if (leaderboardError) throw leaderboardError;
-        setLeaderboard(leaderboardData || []);
+        
+        // Calculate rank dynamically based on position in sorted array
+        const rankedData = (leaderboardData || []).map((user, index) => ({
+          ...user,
+          rank: index + 1
+        }));
+        setLeaderboard(rankedData);
+        
+        // Find current user's rank in the full leaderboard
+        if (currentUserData) {
+          const userRank = rankedData.findIndex(u => u.id === currentUserData.id) + 1;
+          if (userRank > 0) {
+            setCurrentUser({ ...currentUserData, rank: userRank });
+          } else {
+            // User is not in top 10, calculate their rank
+            const { count } = await supabase
+              .from('users')
+              .select('*', { count: 'exact', head: true })
+              .gt('total_points', currentUserData.total_points);
+            setCurrentUser({ ...currentUserData, rank: (count || 0) + 1 });
+          }
+        }
 
       } catch (error: any) {
         console.error('Error loading data:', error);
@@ -300,7 +321,7 @@ const Dashboard = () => {
                           <p className="text-xs text-muted-foreground">{user.total_points} points</p>
                         </div>
                       </div>
-                      <Badge variant="outline">{user.rank}</Badge>
+                      <Badge variant="outline">#{user.rank}</Badge>
                     </div>
                   ))}
                 </div>

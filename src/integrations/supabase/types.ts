@@ -26,7 +26,6 @@ export type Database = {
           level: string | null
           password: string
           pending_points: number
-          rank: number
           reference_code: string
           referrals_count: number
           total_points: number
@@ -44,7 +43,6 @@ export type Database = {
           level?: string | null
           password: string
           pending_points?: number
-          rank?: number
           reference_code: string
           referrals_count?: number
           total_points?: number
@@ -62,7 +60,6 @@ export type Database = {
           level?: string | null
           password?: string
           pending_points?: number
-          rank?: number
           reference_code?: string
           referrals_count?: number
           total_points?: number
