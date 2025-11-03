@@ -6,7 +6,6 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
@@ -23,40 +22,36 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      // First, get the email associated with the reference code
-      const { data: profileData, error: profileError } = await supabase
-        .rpc('get_user_by_reference_code', { ref_code: referenceCode });
+      const response = await fetch(
+        'https://ttxsgqrnhhsuuhkwzpak.supabase.co/functions/v1/login',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            referenceCode,
+            password,
+          }),
+        }
+      );
 
-      if (profileError || !profileData || profileData.length === 0) {
-        toast({
-          title: "Invalid credentials",
-          description: "The reference code you entered is incorrect.",
-          variant: "destructive",
-        });
-        setIsLoading(false);
-        return;
-      }
+      const data = await response.json();
 
-      const email = profileData[0].email;
-
-      // Sign in with email and password
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (signInError) {
+      if (!response.ok) {
         toast({
           title: "Login failed",
-          description: signInError.message,
+          description: data.error || "Invalid credentials",
           variant: "destructive",
         });
         setIsLoading(false);
         return;
       }
 
-      // Session persistence is handled automatically by Supabase
-      // The rememberMe state is already handled by the auth client config
+      // Store JWT token in localStorage (remember me is always enabled via token expiry)
+      localStorage.setItem('auth_token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+
       toast({
         title: "Welcome back!",
         description: "You have successfully logged in.",
@@ -64,6 +59,7 @@ const Login = () => {
 
       navigate("/dashboard");
     } catch (error) {
+      console.error('Login error:', error);
       toast({
         title: "Error",
         description: "An unexpected error occurred. Please try again.",

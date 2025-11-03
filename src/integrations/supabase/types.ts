@@ -14,12 +14,13 @@ export type Database = {
   }
   public: {
     Tables: {
-      profiles: {
+      users: {
         Row: {
           created_at: string | null
           email: string
           full_name: string | null
           id: string
+          password_hash: string
           reference_code: string
           updated_at: string | null
         }
@@ -27,7 +28,8 @@ export type Database = {
           created_at?: string | null
           email: string
           full_name?: string | null
-          id: string
+          id?: string
+          password_hash: string
           reference_code: string
           updated_at?: string | null
         }
@@ -36,6 +38,7 @@ export type Database = {
           email?: string
           full_name?: string | null
           id?: string
+          password_hash?: string
           reference_code?: string
           updated_at?: string | null
         }
@@ -46,13 +49,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      get_user_by_reference_code: {
-        Args: { ref_code: string }
-        Returns: {
-          email: string
-          user_id: string
-        }[]
-      }
+      [_ in never]: never
     }
     Enums: {
       [_ in never]: never
