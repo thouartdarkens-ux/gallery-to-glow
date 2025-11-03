@@ -48,9 +48,8 @@ const Login = () => {
         return;
       }
 
-      // Store JWT token in localStorage (remember me is always enabled via token expiry)
-      localStorage.setItem('auth_token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
+      // Store user data in localStorage
+      localStorage.setItem('currentUser', JSON.stringify(data.user));
 
       toast({
         title: "Welcome back!",

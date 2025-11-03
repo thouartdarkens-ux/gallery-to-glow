@@ -1,6 +1,4 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.78.0';
-import { compare } from 'https://deno.land/x/bcrypt@v0.4.1/src/main.ts';
-import { create } from 'https://deno.land/x/djwt@v3.0.0/mod.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -46,10 +44,8 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Verify password
-    const passwordMatch = await compare(password, user.password_hash);
-
-    if (!passwordMatch) {
+    // Verify password (plain text comparison)
+    if (password !== user.password) {
       console.error('Password mismatch');
       return new Response(
         JSON.stringify({ error: 'Invalid credentials' }),
@@ -60,31 +56,10 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Generate JWT token
-    const jwtSecret = Deno.env.get('JWT_SECRET') ?? 'your-secret-key-change-in-production';
-    const key = await crypto.subtle.importKey(
-      'raw',
-      new TextEncoder().encode(jwtSecret),
-      { name: 'HMAC', hash: 'SHA-256' },
-      false,
-      ['sign', 'verify']
-    );
-
-    const payload = {
-      sub: user.id,
-      referenceCode: user.reference_code,
-      email: user.email,
-      fullName: user.full_name,
-      exp: Math.floor(Date.now() / 1000) + (30 * 24 * 60 * 60), // 30 days
-    };
-
-    const token = await create({ alg: 'HS256', typ: 'JWT' }, payload, key);
-
     console.log(`Login successful for user: ${user.id}`);
 
     return new Response(
       JSON.stringify({
-        token,
         user: {
           id: user.id,
           referenceCode: user.reference_code,

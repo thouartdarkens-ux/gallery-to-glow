@@ -105,7 +105,10 @@ const Dashboard = () => {
           <Button 
             variant="ghost" 
             className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground"
-            onClick={() => navigate("/login")}
+            onClick={() => {
+              localStorage.removeItem('currentUser');
+              navigate("/login");
+            }}
           >
             <LogOut className="h-4 w-4" />
             <span>Log out</span>
