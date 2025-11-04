@@ -11,6 +11,8 @@ import ResetPassword from "./pages/ResetPassword";
 import ResetSuccess from "./pages/ResetSuccess";
 import Dashboard from "./pages/Dashboard";
 import Settings from "./pages/Settings";
+import ControlRoomLogin from "./pages/ControlRoomLogin";
+import ControlRoom from "./pages/ControlRoom";
 import NotFound from "./pages/NotFound";
 
 // Create QueryClient outside of component to avoid re-initialization
@@ -33,6 +35,8 @@ const App = () => {
             <Route path="/reset-success" element={<ResetSuccess />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/controlroomlogin" element={<ControlRoomLogin />} />
+            <Route path="/controlroom" element={<ControlRoom />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
