@@ -69,16 +69,18 @@ const Settings = () => {
 
   const loadUserData = async () => {
     try {
-      const userEmail = localStorage.getItem("userEmail");
-      if (!userEmail) {
+      const userData = localStorage.getItem("currentUser");
+      if (!userData) {
         navigate("/login");
         return;
       }
 
+      const user = JSON.parse(userData);
+
       const { data, error } = await supabase
         .from("users")
         .select("*")
-        .eq("email", userEmail)
+        .eq("id", user.id)
         .maybeSingle();
 
       if (error) throw error;
@@ -241,7 +243,7 @@ const Settings = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("userEmail");
+    localStorage.removeItem("currentUser");
     navigate("/login");
   };
 
