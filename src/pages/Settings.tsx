@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Search, Bell, LogOut, LayoutDashboard, Award, Settings as SettingsIcon, LifeBuoy } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,10 +8,242 @@ import { Switch } from "@/components/ui/switch";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { z } from "zod";
+
+const profileSchema = z.object({
+  full_name: z.string().min(1, "Name is required").max(100),
+  username: z.string().min(3, "Username must be at least 3 characters").max(50).optional(),
+  email: z.string().email("Invalid email address"),
+  date_of_birth: z.string().optional(),
+  present_address: z.string().max(200).optional(),
+  permanent_address: z.string().max(200).optional(),
+  city: z.string().max(100).optional(),
+  postal_code: z.string().max(20).optional(),
+  country: z.string().max(100).optional(),
+});
+
+const passwordSchema = z.object({
+  currentPassword: z.string().min(1, "Current password is required"),
+  newPassword: z.string().min(8, "Password must be at least 8 characters"),
+  confirmPassword: z.string().min(8, "Password must be at least 8 characters"),
+}).refine((data) => data.newPassword === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+});
 
 const Settings = () => {
   const navigate = useNavigate();
-  const [activeNav, setActiveNav] = useState("settings");
+  const [loading, setLoading] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+  
+  // Profile fields
+  const [fullName, setFullName] = useState("");
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState("");
+  const [presentAddress, setPresentAddress] = useState("");
+  const [permanentAddress, setPermanentAddress] = useState("");
+  const [city, setCity] = useState("");
+  const [postalCode, setPostalCode] = useState("");
+  const [country, setCountry] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState("");
+  
+  // Preferences
+  const [currency, setCurrency] = useState("USD");
+  const [timezone, setTimezone] = useState("");
+  const [notificationPromotional, setNotificationPromotional] = useState(true);
+  const [notificationOffers, setNotificationOffers] = useState(false);
+  const [notificationRecommendations, setNotificationRecommendations] = useState(true);
+  
+  // Security
+  const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  useEffect(() => {
+    loadUserData();
+  }, []);
+
+  const loadUserData = async () => {
+    try {
+      const userEmail = localStorage.getItem("userEmail");
+      if (!userEmail) {
+        navigate("/login");
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("users")
+        .select("*")
+        .eq("email", userEmail)
+        .maybeSingle();
+
+      if (error) throw error;
+
+      if (data) {
+        setUserId(data.id);
+        setFullName(data.full_name || "");
+        setUsername(data.username || "");
+        setEmail(data.email);
+        setDateOfBirth(data.date_of_birth || "");
+        setPresentAddress(data.present_address || "");
+        setPermanentAddress(data.permanent_address || "");
+        setCity(data.city || "");
+        setPostalCode(data.postal_code || "");
+        setCountry(data.country || "");
+        setAvatarUrl(data.avatar_url || "");
+        setCurrency(data.currency || "USD");
+        setTimezone(data.timezone || "");
+        setNotificationPromotional(data.notification_promotional ?? true);
+        setNotificationOffers(data.notification_offers ?? false);
+        setNotificationRecommendations(data.notification_recommendations ?? true);
+        setTwoFactorEnabled(data.two_factor_enabled ?? false);
+      }
+    } catch (error) {
+      console.error("Error loading user data:", error);
+      toast.error("Failed to load user data");
+    }
+  };
+
+  const handleProfileSave = async () => {
+    try {
+      setLoading(true);
+
+      const profileData = {
+        full_name: fullName,
+        username: username || null,
+        email,
+        date_of_birth: dateOfBirth || null,
+        present_address: presentAddress || null,
+        permanent_address: permanentAddress || null,
+        city: city || null,
+        postal_code: postalCode || null,
+        country: country || null,
+      };
+
+      profileSchema.parse(profileData);
+
+      const { error } = await supabase
+        .from("users")
+        .update(profileData)
+        .eq("id", userId);
+
+      if (error) throw error;
+
+      toast.success("Profile updated successfully");
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        toast.error(error.errors[0].message);
+      } else {
+        console.error("Error updating profile:", error);
+        toast.error("Failed to update profile");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePreferencesSave = async () => {
+    try {
+      setLoading(true);
+
+      const { error } = await supabase
+        .from("users")
+        .update({
+          currency,
+          timezone,
+          notification_promotional: notificationPromotional,
+          notification_offers: notificationOffers,
+          notification_recommendations: notificationRecommendations,
+        })
+        .eq("id", userId);
+
+      if (error) throw error;
+
+      toast.success("Preferences updated successfully");
+    } catch (error) {
+      console.error("Error updating preferences:", error);
+      toast.error("Failed to update preferences");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePasswordChange = async () => {
+    try {
+      setLoading(true);
+
+      passwordSchema.parse({
+        currentPassword,
+        newPassword,
+        confirmPassword,
+      });
+
+      // Verify current password
+      const { data: userData } = await supabase
+        .from("users")
+        .select("password")
+        .eq("id", userId)
+        .single();
+
+      if (userData?.password !== currentPassword) {
+        toast.error("Current password is incorrect");
+        return;
+      }
+
+      // Update password
+      const { error } = await supabase
+        .from("users")
+        .update({ password: newPassword })
+        .eq("id", userId);
+
+      if (error) throw error;
+
+      toast.success("Password updated successfully");
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        toast.error(error.errors[0].message);
+      } else {
+        console.error("Error updating password:", error);
+        toast.error("Failed to update password");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSecuritySave = async () => {
+    try {
+      setLoading(true);
+
+      const { error } = await supabase
+        .from("users")
+        .update({
+          two_factor_enabled: twoFactorEnabled,
+        })
+        .eq("id", userId);
+
+      if (error) throw error;
+
+      toast.success("Security settings updated successfully");
+    } catch (error) {
+      console.error("Error updating security settings:", error);
+      toast.error("Failed to update security settings");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("userEmail");
+    navigate("/login");
+  };
 
   return (
     <div className="min-h-screen flex bg-background">
@@ -77,7 +309,7 @@ const Settings = () => {
           <Button 
             variant="ghost" 
             className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground"
-            onClick={() => navigate("/login")}
+            onClick={handleLogout}
           >
             <LogOut className="h-4 w-4" />
             <span>Log out</span>
@@ -91,8 +323,8 @@ const Settings = () => {
         <header className="bg-card border-b sticky top-0 z-10">
           <div className="flex items-center justify-between px-8 py-4">
             <div>
-              <h1 className="text-2xl font-bold text-foreground">Welcome Back, Reese</h1>
-              <p className="text-sm text-muted-foreground">Here's what it looks like today</p>
+              <h1 className="text-2xl font-bold text-foreground">Welcome Back, {fullName || "User"}</h1>
+              <p className="text-sm text-muted-foreground">Manage your account settings</p>
             </div>
             <div className="flex items-center gap-4">
               <div className="relative w-96">
@@ -103,8 +335,8 @@ const Settings = () => {
                 <Bell className="h-5 w-5" />
               </Button>
               <Avatar>
-                <AvatarImage src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop" />
-                <AvatarFallback>GR</AvatarFallback>
+                <AvatarImage src={avatarUrl || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop"} />
+                <AvatarFallback>{fullName?.slice(0, 2).toUpperCase() || "U"}</AvatarFallback>
               </Avatar>
             </div>
           </div>
@@ -123,8 +355,8 @@ const Settings = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl">
                 <div className="md:col-span-2 flex items-center gap-6">
                   <Avatar className="h-24 w-24">
-                    <AvatarImage src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop" />
-                    <AvatarFallback>GR</AvatarFallback>
+                    <AvatarImage src={avatarUrl || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop"} />
+                    <AvatarFallback>{fullName?.slice(0, 2).toUpperCase() || "U"}</AvatarFallback>
                   </Avatar>
                   <div>
                     <h3 className="font-semibold">Profile Picture</h3>
@@ -134,63 +366,95 @@ const Settings = () => {
 
                 <div className="space-y-2">
                   <Label>Your Name</Label>
-                  <Input defaultValue="Grant Reese" />
+                  <Input 
+                    value={fullName} 
+                    onChange={(e) => setFullName(e.target.value)}
+                    placeholder="Enter your full name"
+                  />
                 </div>
 
                 <div className="space-y-2">
                   <Label>User Name</Label>
-                  <Input defaultValue="grantreese" />
+                  <Input 
+                    value={username} 
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="Enter your username"
+                  />
                 </div>
 
                 <div className="space-y-2">
                   <Label>Email</Label>
-                  <Input type="email" defaultValue="orggrantarthur@gmail.com" />
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Password</Label>
-                  <Input type="password" defaultValue="**********" />
+                  <Input 
+                    type="email" 
+                    value={email} 
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Enter your email"
+                  />
                 </div>
 
                 <div className="space-y-2">
                   <Label>Date of Birth</Label>
-                  <Select defaultValue="1990-01-25">
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="1990-01-25">25 January 1990</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Input 
+                    type="date" 
+                    value={dateOfBirth} 
+                    onChange={(e) => setDateOfBirth(e.target.value)}
+                  />
                 </div>
 
                 <div className="space-y-2">
                   <Label>Present Address</Label>
-                  <Input defaultValue="Adenta, Accra, GH" />
+                  <Input 
+                    value={presentAddress} 
+                    onChange={(e) => setPresentAddress(e.target.value)}
+                    placeholder="Enter your present address"
+                  />
                 </div>
 
                 <div className="space-y-2">
                   <Label>Permanent Address</Label>
-                  <Input defaultValue="Adenta, Accra, GH" />
+                  <Input 
+                    value={permanentAddress} 
+                    onChange={(e) => setPermanentAddress(e.target.value)}
+                    placeholder="Enter your permanent address"
+                  />
                 </div>
 
                 <div className="space-y-2">
                   <Label>City</Label>
-                  <Input defaultValue="Lakeside" />
+                  <Input 
+                    value={city} 
+                    onChange={(e) => setCity(e.target.value)}
+                    placeholder="Enter your city"
+                  />
                 </div>
 
                 <div className="space-y-2">
                   <Label>Postal Code</Label>
-                  <Input defaultValue="00233" />
+                  <Input 
+                    value={postalCode} 
+                    onChange={(e) => setPostalCode(e.target.value)}
+                    placeholder="Enter your postal code"
+                  />
                 </div>
 
                 <div className="space-y-2">
                   <Label>Country</Label>
-                  <Input defaultValue="GHANA" />
+                  <Input 
+                    value={country} 
+                    onChange={(e) => setCountry(e.target.value)}
+                    placeholder="Enter your country"
+                  />
                 </div>
 
                 <div className="md:col-span-2 flex justify-end">
-                  <Button size="lg" className="px-12">Save</Button>
+                  <Button 
+                    size="lg" 
+                    className="px-12"
+                    onClick={handleProfileSave}
+                    disabled={loading}
+                  >
+                    {loading ? "Saving..." : "Save"}
+                  </Button>
                 </div>
               </div>
             </TabsContent>
@@ -200,12 +464,20 @@ const Settings = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label>Currency</Label>
-                    <Input defaultValue="GHS" />
+                    <Input 
+                      value={currency} 
+                      onChange={(e) => setCurrency(e.target.value)}
+                      placeholder="Enter your currency (e.g., USD, GHS)"
+                    />
                   </div>
 
                   <div className="space-y-2">
                     <Label>Time Zone</Label>
-                    <Input defaultValue="(GMT-12:00) International Date Line West" />
+                    <Input 
+                      value={timezone} 
+                      onChange={(e) => setTimezone(e.target.value)}
+                      placeholder="Enter your timezone"
+                    />
                   </div>
                 </div>
 
@@ -216,26 +488,42 @@ const Settings = () => {
                     <div>
                       <p className="font-medium">Receive promotional emails and notifications</p>
                     </div>
-                    <Switch defaultChecked />
+                    <Switch 
+                      checked={notificationPromotional}
+                      onCheckedChange={setNotificationPromotional}
+                    />
                   </div>
 
                   <div className="flex items-center justify-between py-3 border-b">
                     <div>
                       <p className="font-medium">I receive promotional offers</p>
                     </div>
-                    <Switch />
+                    <Switch 
+                      checked={notificationOffers}
+                      onCheckedChange={setNotificationOffers}
+                    />
                   </div>
 
                   <div className="flex items-center justify-between py-3 border-b">
                     <div>
                       <p className="font-medium">There are recommendation for my account</p>
                     </div>
-                    <Switch defaultChecked />
+                    <Switch 
+                      checked={notificationRecommendations}
+                      onCheckedChange={setNotificationRecommendations}
+                    />
                   </div>
                 </div>
 
                 <div className="flex justify-end">
-                  <Button size="lg" className="px-12">Save</Button>
+                  <Button 
+                    size="lg" 
+                    className="px-12"
+                    onClick={handlePreferencesSave}
+                    disabled={loading}
+                  >
+                    {loading ? "Saving..." : "Save"}
+                  </Button>
                 </div>
               </div>
             </TabsContent>
@@ -248,7 +536,20 @@ const Settings = () => {
                     <div>
                       <p className="font-medium">Enable or disable two factor authentication</p>
                     </div>
-                    <Switch defaultChecked />
+                    <Switch 
+                      checked={twoFactorEnabled}
+                      onCheckedChange={setTwoFactorEnabled}
+                    />
+                  </div>
+                  <div className="flex justify-end">
+                    <Button 
+                      size="lg" 
+                      className="px-12"
+                      onClick={handleSecuritySave}
+                      disabled={loading}
+                    >
+                      {loading ? "Saving..." : "Save 2FA Settings"}
+                    </Button>
                   </div>
                 </div>
 
@@ -257,22 +558,44 @@ const Settings = () => {
                   
                   <div className="space-y-2">
                     <Label>Current Password</Label>
-                    <Input type="password" defaultValue="**********" />
+                    <Input 
+                      type="password" 
+                      value={currentPassword}
+                      onChange={(e) => setCurrentPassword(e.target.value)}
+                      placeholder="Enter current password"
+                    />
                   </div>
 
                   <div className="space-y-2">
                     <Label>New Password</Label>
-                    <Input type="password" defaultValue="**********" />
+                    <Input 
+                      type="password" 
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      placeholder="Enter new password"
+                    />
                   </div>
 
                   <div className="space-y-2">
                     <Label>Confirm Password</Label>
-                    <Input type="password" defaultValue="**********" />
+                    <Input 
+                      type="password" 
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="Confirm new password"
+                    />
                   </div>
-                </div>
-
-                <div className="flex justify-end">
-                  <Button size="lg" className="px-12">Save</Button>
+                  
+                  <div className="flex justify-end">
+                    <Button 
+                      size="lg" 
+                      className="px-12"
+                      onClick={handlePasswordChange}
+                      disabled={loading}
+                    >
+                      {loading ? "Updating..." : "Update Password"}
+                    </Button>
+                  </div>
                 </div>
               </div>
             </TabsContent>

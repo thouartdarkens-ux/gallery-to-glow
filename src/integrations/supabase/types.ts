@@ -18,52 +18,91 @@ export type Database = {
         Row: {
           accumulated_points: number
           avatar_url: string | null
+          city: string | null
+          country: string | null
           created_at: string | null
+          currency: string | null
+          date_of_birth: string | null
           deducted_points: number
           email: string
           full_name: string | null
           id: string
           level: string | null
+          notification_offers: boolean | null
+          notification_promotional: boolean | null
+          notification_recommendations: boolean | null
           password: string
           pending_points: number
+          permanent_address: string | null
+          postal_code: string | null
+          present_address: string | null
           reference_code: string
           referrals_count: number
+          timezone: string | null
           total_points: number
+          two_factor_enabled: boolean | null
           updated_at: string | null
+          username: string | null
           verified: boolean
         }
         Insert: {
           accumulated_points?: number
           avatar_url?: string | null
+          city?: string | null
+          country?: string | null
           created_at?: string | null
+          currency?: string | null
+          date_of_birth?: string | null
           deducted_points?: number
           email: string
           full_name?: string | null
           id?: string
           level?: string | null
+          notification_offers?: boolean | null
+          notification_promotional?: boolean | null
+          notification_recommendations?: boolean | null
           password: string
           pending_points?: number
+          permanent_address?: string | null
+          postal_code?: string | null
+          present_address?: string | null
           reference_code: string
           referrals_count?: number
+          timezone?: string | null
           total_points?: number
+          two_factor_enabled?: boolean | null
           updated_at?: string | null
+          username?: string | null
           verified?: boolean
         }
         Update: {
           accumulated_points?: number
           avatar_url?: string | null
+          city?: string | null
+          country?: string | null
           created_at?: string | null
+          currency?: string | null
+          date_of_birth?: string | null
           deducted_points?: number
           email?: string
           full_name?: string | null
           id?: string
           level?: string | null
+          notification_offers?: boolean | null
+          notification_promotional?: boolean | null
+          notification_recommendations?: boolean | null
           password?: string
           pending_points?: number
+          permanent_address?: string | null
+          postal_code?: string | null
+          present_address?: string | null
           reference_code?: string
           referrals_count?: number
+          timezone?: string | null
           total_points?: number
+          two_factor_enabled?: boolean | null
           updated_at?: string | null
+          username?: string | null
           verified?: boolean
         }
         Relationships: []
