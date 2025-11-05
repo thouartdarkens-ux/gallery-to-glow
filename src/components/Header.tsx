@@ -42,13 +42,13 @@ const Header = () => {
               <span className="font-semibold text-xl">Hallway</span>
             </Link>
             <nav className="flex items-center gap-8">
-              <Link to="/" className="text-accent font-medium" style={{ color: 'hsl(35 40% 50%)' }}>
+              <Link to="/" className="text-foreground hover:text-primary font-medium">
                 Home
               </Link>
-              <Link to="/volunteer" className="text-muted-foreground hover:text-foreground font-medium">
-                Become A Volunteer
+              <Link to="/support" className="text-foreground hover:text-primary font-medium">
+                Support The Project
               </Link>
-              <Link to="/become-vendor" className="text-muted-foreground hover:text-foreground font-medium">
+              <Link to="/vendor" className="text-foreground hover:text-primary font-medium">
                 Become A Vendor
               </Link>
             </nav>
