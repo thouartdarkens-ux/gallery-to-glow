@@ -66,49 +66,72 @@ const Index = () => {
       
       {/* Hero Section */}
       <section className="relative py-20 px-4 overflow-hidden" style={{
-        background: 'linear-gradient(135deg, hsl(var(--accent)) 0%, hsl(var(--primary)) 100%)'
+        background: 'linear-gradient(180deg, hsl(var(--hero-gradient-start)) 0%, hsl(var(--hero-gradient-end)) 100%)'
       }}>
         <div className="container mx-auto relative z-10">
-          <div className="max-w-4xl mx-auto text-center space-y-8">
-            <h1 className="text-5xl md:text-6xl font-bold text-primary-foreground">
-              Your Campus <span className="italic">Marketplace</span><br />
-              In Your Pocket.
+          <div className="max-w-4xl mx-auto text-center space-y-6">
+            <h1 className="text-5xl md:text-6xl font-bold text-white">
+              Your Campus <span className="italic" style={{ color: 'hsl(35 40% 45%)' }}>Marketplace</span>,<br />
+              in Your Pocket.
             </h1>
-            <p className="text-xl text-primary-foreground/90">
-              Launch day is coming: Dec 1st, 2025
+            <p className="text-lg text-white/80">
+              Launches on January 14, 2026...
             </p>
             
             {/* Countdown Timer */}
-            <div className="flex gap-4 justify-center">
+            <div className="flex gap-3 justify-center pt-4">
               {[
-                { value: timeLeft.days, label: 'DAYS' },
-                { value: timeLeft.hours, label: 'HRS' },
-                { value: timeLeft.minutes, label: 'MIN' },
-                { value: timeLeft.seconds, label: 'SEC' }
+                { value: timeLeft.days, label: 'Days' },
+                { value: timeLeft.hours, label: 'Hrs' },
+                { value: timeLeft.minutes, label: 'Mins' },
+                { value: timeLeft.seconds, label: 'Secs' }
               ].map((item, idx) => (
-                <div key={idx} className="bg-card rounded-lg p-4 min-w-[80px]">
-                  <div className="text-3xl font-bold text-foreground">{item.value}</div>
-                  <div className="text-xs text-muted-foreground">{item.label}</div>
+                <div key={idx} className="bg-white/95 rounded-lg p-3 min-w-[70px] shadow-md">
+                  <div className="text-2xl font-bold text-foreground">{item.value}</div>
+                  <div className="text-[10px] text-muted-foreground uppercase tracking-wide">{item.label}</div>
                 </div>
               ))}
             </div>
 
-            <div className="flex gap-4 justify-center">
+            <div className="flex gap-2 justify-center pt-2">
               <input
                 type="email"
                 placeholder="Your email address"
-                className="px-4 py-3 rounded-lg bg-card border border-border w-64"
+                className="px-4 py-2.5 rounded-full bg-white/90 border-0 w-64 text-sm placeholder:text-muted-foreground"
               />
-              <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
-                Join Waitlist
+              <Button size="lg" className="rounded-full px-6 text-sm" style={{
+                backgroundColor: 'hsl(35 35% 40%)',
+                color: 'white'
+              }}>
+                Join The Waitlist
               </Button>
             </div>
 
             {/* Phone Mockups */}
-            <div className="pt-12 flex justify-center gap-4">
-              <div className="w-48 h-96 bg-card/10 backdrop-blur rounded-3xl border-4 border-card/50"></div>
-              <div className="w-48 h-96 bg-card/10 backdrop-blur rounded-3xl border-4 border-card/50"></div>
-              <div className="w-48 h-96 bg-card/10 backdrop-blur rounded-3xl border-4 border-card/50"></div>
+            <div className="pt-8 flex justify-center gap-3 items-end">
+              <div className="w-40 h-80 bg-black/80 rounded-[2rem] border-4 border-gray-700 relative overflow-hidden shadow-2xl">
+                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-24 h-6 bg-black rounded-b-2xl"></div>
+                <div className="p-3 pt-8 bg-white h-full">
+                  <div className="text-xs text-left mb-2">Merry Christmas, Ivan</div>
+                  <div className="text-[8px] mb-2 bg-gray-100 rounded p-1">Search for a product or service...</div>
+                  <div className="text-[10px] font-bold mb-1">x-mas sales</div>
+                  <div className="grid grid-cols-2 gap-1">
+                    <div className="bg-gray-200 rounded h-12"></div>
+                    <div className="bg-gray-200 rounded h-12"></div>
+                  </div>
+                </div>
+              </div>
+              <div className="w-44 h-[22rem] bg-gradient-to-b from-amber-900 to-amber-950 rounded-[2.5rem] border-4 border-gray-700 relative overflow-hidden shadow-2xl flex items-center justify-center">
+                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-28 h-7 bg-black rounded-b-3xl"></div>
+                <div className="text-white text-4xl font-bold">H</div>
+              </div>
+              <div className="w-40 h-80 bg-black/80 rounded-[2rem] border-4 border-gray-700 relative overflow-hidden shadow-2xl">
+                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-24 h-6 bg-black rounded-b-2xl"></div>
+                <div className="p-3 pt-8 bg-white h-full">
+                  <div className="text-[10px] font-bold mb-2 text-center">PS5 DualSense Controller</div>
+                  <div className="bg-gray-200 rounded h-24 mb-2"></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -333,39 +356,42 @@ const Index = () => {
 
       {/* Bottom CTA Section */}
       <section className="relative py-20 px-4 overflow-hidden" style={{
-        background: 'linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%)'
+        background: 'linear-gradient(180deg, hsl(var(--hero-gradient-start)) 0%, hsl(var(--hero-gradient-end)) 100%)'
       }}>
         <div className="container mx-auto relative z-10">
-          <div className="max-w-4xl mx-auto text-center space-y-8">
-            <h2 className="text-4xl md:text-5xl font-bold text-primary-foreground">
+          <div className="max-w-4xl mx-auto text-center space-y-6">
+            <h2 className="text-4xl md:text-5xl font-bold text-white">
               Don't miss launch day.
             </h2>
-            <p className="text-xl text-primary-foreground/90">
+            <p className="text-lg text-white/80">
               Stay in the loop today and enjoy perks exclusive to our first users.
             </p>
             
             {/* Countdown Timer */}
-            <div className="flex gap-4 justify-center">
+            <div className="flex gap-3 justify-center pt-2">
               {[
-                { value: timeLeft.days, label: 'DAYS' },
-                { value: timeLeft.hours, label: 'HRS' },
-                { value: timeLeft.minutes, label: 'MIN' },
-                { value: timeLeft.seconds, label: 'SEC' }
+                { value: timeLeft.days, label: 'Days' },
+                { value: timeLeft.hours, label: 'Hrs' },
+                { value: timeLeft.minutes, label: 'Mins' },
+                { value: timeLeft.seconds, label: 'Secs' }
               ].map((item, idx) => (
-                <div key={idx} className="bg-card rounded-lg p-4 min-w-[80px]">
-                  <div className="text-3xl font-bold text-foreground">{item.value}</div>
-                  <div className="text-xs text-muted-foreground">{item.label}</div>
+                <div key={idx} className="bg-white/95 rounded-lg p-3 min-w-[70px] shadow-md">
+                  <div className="text-2xl font-bold text-foreground">{item.value}</div>
+                  <div className="text-[10px] text-muted-foreground uppercase tracking-wide">{item.label}</div>
                 </div>
               ))}
             </div>
 
-            <div className="flex gap-4 justify-center">
+            <div className="flex gap-2 justify-center pt-2">
               <input
                 type="email"
                 placeholder="Your email address"
-                className="px-4 py-3 rounded-lg bg-card border border-border w-64"
+                className="px-4 py-2.5 rounded-full bg-white/90 border-0 w-64 text-sm placeholder:text-muted-foreground"
               />
-              <Button size="lg" className="bg-card text-foreground hover:bg-card/90">
+              <Button size="lg" className="rounded-full px-6 text-sm" style={{
+                backgroundColor: 'hsl(35 35% 40%)',
+                color: 'white'
+              }}>
                 Join Waitlist
               </Button>
             </div>
