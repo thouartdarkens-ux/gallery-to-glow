@@ -13,6 +13,7 @@ import Dashboard from "./pages/Dashboard";
 import Settings from "./pages/Settings";
 import ControlRoomLogin from "./pages/ControlRoomLogin";
 import ControlRoom from "./pages/ControlRoom";
+import BecomeVendor from "./pages/BecomeVendor";
 import NotFound from "./pages/NotFound";
 
 // Create QueryClient outside of component to avoid re-initialization
@@ -37,6 +38,7 @@ const App = () => {
             <Route path="/settings" element={<Settings />} />
             <Route path="/controlroomlogin" element={<ControlRoomLogin />} />
             <Route path="/controlroom" element={<ControlRoom />} />
+            <Route path="/become-vendor" element={<BecomeVendor />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

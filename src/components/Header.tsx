@@ -48,7 +48,7 @@ const Header = () => {
               <Link to="/support" className="text-foreground hover:text-primary font-medium">
                 Support The Project
               </Link>
-              <Link to="/vendor" className="text-foreground hover:text-primary font-medium">
+              <Link to="/become-vendor" className="text-foreground hover:text-primary font-medium">
                 Become A Vendor
               </Link>
             </nav>
