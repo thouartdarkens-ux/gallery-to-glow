@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Twitter, Facebook, Instagram, Youtube } from "lucide-react";
+import logo from "@/assets/logo.jpg";
 
 const Header = () => {
   return (
@@ -36,9 +37,7 @@ const Header = () => {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between py-4">
             <Link to="/" className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-xl">H</span>
-              </div>
+              <img src={logo} alt="Hallway Logo" className="w-10 h-10 rounded-full object-cover" />
               <span className="font-semibold text-xl">Hallway</span>
             </Link>
             <nav className="flex items-center gap-8">
