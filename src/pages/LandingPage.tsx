@@ -1,15 +1,19 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ChevronRight, Star } from "lucide-react";
+import { ChevronRight, Star, Loader2 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const LandingPage = () => {
   const [days, setDays] = useState(140);
   const [hours, setHours] = useState(1);
   const [minutes, setMinutes] = useState(34);
   const [seconds, setSeconds] = useState(29);
+  const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -35,6 +39,40 @@ const LandingPage = () => {
     }, 1000);
     return () => clearInterval(timer);
   }, []);
+
+  const handleJoinWaitlist = async (e: React.FormEvent, inputEmail: string) => {
+    e.preventDefault();
+
+    const emailToSubmit = inputEmail.trim();
+
+    if (!emailToSubmit) {
+      toast.error("Please enter your email address");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from("waitlist")
+        .insert([{ email: emailToSubmit }])
+        .select();
+
+      if (error) {
+        if (error.code === "23505") {
+          toast.success("You're already on the waitlist!");
+        } else {
+          toast.error("Failed to join waitlist");
+        }
+      } else if (data) {
+        toast.success("Welcome to the waitlist!");
+        setEmail("");
+      }
+    } catch (err) {
+      toast.error("Something went wrong");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen w-full flex flex-col bg-white">
@@ -72,16 +110,30 @@ const LandingPage = () => {
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+          <form onSubmit={(e) => handleJoinWaitlist(e, email)} className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
             <input
               type="email"
               placeholder="Enter your email address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="px-6 py-3 rounded-lg text-gray-900 flex-1 max-w-xs"
+              disabled={isLoading}
             />
-            <Button className="bg-amber-700 hover:bg-amber-800 text-white px-8">
-              Join Hallway
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="bg-amber-700 hover:bg-amber-800 text-white px-8 disabled:opacity-50"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Joining...
+                </>
+              ) : (
+                "Join Hallway"
+              )}
             </Button>
-          </div>
+          </form>
 
           <div className="flex justify-center gap-4 text-white text-sm">
             <a href="#" className="hover:underline">Terms</a>
@@ -320,16 +372,30 @@ const LandingPage = () => {
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <form onSubmit={(e) => handleJoinWaitlist(e, email)} className="flex flex-col sm:flex-row gap-4 justify-center">
             <input
               type="email"
               placeholder="Enter your email address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="px-6 py-3 rounded-lg text-gray-900 flex-1 max-w-xs"
+              disabled={isLoading}
             />
-            <Button className="bg-white text-amber-700 hover:bg-gray-100 px-8 font-semibold">
-              Join Hallway
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="bg-white text-amber-700 hover:bg-gray-100 px-8 font-semibold disabled:opacity-50"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Joining...
+                </>
+              ) : (
+                "Join Hallway"
+              )}
             </Button>
-          </div>
+          </form>
         </div>
       </div>
 
