@@ -15,6 +15,7 @@ const Dashboard = () => {
   const [activeNav, setActiveNav] = useState("overview");
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [leaderboard, setLeaderboard] = useState<any[]>([]);
+  const [waitlistMembers, setWaitlistMembers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -47,14 +48,14 @@ const Dashboard = () => {
           .limit(10);
 
         if (leaderboardError) throw leaderboardError;
-        
+
         // Calculate rank dynamically based on position in sorted array
         const rankedData = (leaderboardData || []).map((user, index) => ({
           ...user,
           rank: index + 1
         }));
         setLeaderboard(rankedData);
-        
+
         // Find current user's rank in the full leaderboard
         if (currentUserData) {
           const userRank = rankedData.findIndex(u => u.id === currentUserData.id) + 1;
@@ -69,6 +70,16 @@ const Dashboard = () => {
             setCurrentUser({ ...currentUserData, rank: (count || 0) + 1 });
           }
         }
+
+        // Fetch waitlist data
+        const { data: waitlistData, error: waitlistError } = await supabase
+          .from('waitlist')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(10);
+
+        if (waitlistError) throw waitlistError;
+        setWaitlistMembers(waitlistData || []);
 
       } catch (error: any) {
         console.error('Error loading data:', error);
@@ -85,11 +96,13 @@ const Dashboard = () => {
     loadUserData();
   }, [navigate, toast]);
 
-  const waitlistMembers = [
-    { email: "gra*********@gmail.com...", joinDate: "30th June,2026", code: "HW26ZXCG" },
-    { email: "be**********@gmail.com...", joinDate: "21st April,2026", code: "HW26ZXCG" },
-    { email: "ju**********@gmail.com...", joinDate: "17th October,2026", code: "HW26ZXCG" },
-  ];
+  const maskEmail = (email: string) => {
+    const [localPart, domain] = email.split('@');
+    if (localPart.length <= 3) {
+      return `${localPart}***@${domain}`;
+    }
+    return `${localPart.substring(0, 3)}${'*'.repeat(localPart.length - 3)}@${domain}`;
+  };
 
   if (loading || !currentUser) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
@@ -336,7 +349,9 @@ const Dashboard = () => {
                 <div>
                   <CardTitle>New Waitlist Members</CardTitle>
                   <p className="text-sm text-muted-foreground">
-                    A quick glance at the latest people who joined through your reference code.
+                    {waitlistMembers.length === 0
+                      ? "No one on the waitlist yet"
+                      : `${waitlistMembers.length} people joined the waitlist`}
                   </p>
                 </div>
                 <Button variant="link" className="text-primary">
@@ -345,32 +360,42 @@ const Dashboard = () => {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="border rounded-lg overflow-hidden">
-                <table className="w-full">
-                  <thead className="bg-muted/50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
-                        Email Address ↓
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
-                        Join Date ↓
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
-                        Time Joined ↓
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y">
-                    {waitlistMembers.map((member, index) => (
-                      <tr key={index} className="hover:bg-muted/50">
-                        <td className="px-6 py-4 text-sm">{member.email}</td>
-                        <td className="px-6 py-4 text-sm">{member.joinDate}</td>
-                        <td className="px-6 py-4 text-sm">{member.code}</td>
+              {waitlistMembers.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <p>No waitlist members yet</p>
+                </div>
+              ) : (
+                <div className="border rounded-lg overflow-hidden">
+                  <table className="w-full">
+                    <thead className="bg-muted/50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
+                          Email Address ↓
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
+                          Join Date ↓
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
+                          Status
+                        </th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody className="divide-y">
+                      {waitlistMembers.map((member, index) => (
+                        <tr key={member.id || index} className="hover:bg-muted/50">
+                          <td className="px-6 py-4 text-sm">{maskEmail(member.email)}</td>
+                          <td className="px-6 py-4 text-sm">{new Date(member.created_at).toLocaleDateString()}</td>
+                          <td className="px-6 py-4 text-sm">
+                            <Badge variant={member.status === 'verified' ? 'default' : 'secondary'}>
+                              {member.status}
+                            </Badge>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
