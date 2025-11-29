@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import logo from "@/assets/logo.jpg";
 
 const Index = () => {
   return (
@@ -14,9 +15,7 @@ const Index = () => {
         <div className="container mx-auto relative z-10">
           <div className="max-w-4xl mx-auto text-center space-y-8">
             <div className="flex justify-center">
-              <div className="w-20 h-20 rounded-full bg-primary flex items-center justify-center shadow-2xl">
-                <span className="text-primary-foreground font-bold text-3xl">H</span>
-              </div>
+              <img src={logo} alt="Hallway Logo" className="w-20 h-20 rounded-full object-cover shadow-2xl" />
             </div>
             
             <div className="space-y-4">

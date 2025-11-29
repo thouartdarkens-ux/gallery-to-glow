@@ -1,15 +1,14 @@
 import { Link } from "react-router-dom";
 import { Instagram, Youtube, Linkedin } from "lucide-react";
 import { SiSnapchat, SiTiktok, SiX } from "react-icons/si";
+import logo from "@/assets/logo.jpg";
 const Footer = () => {
   return <footer className="bg-card border-t mt-auto">
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-xl">H</span>
-              </div>
+              <img src={logo} alt="Hallway Logo" className="w-10 h-10 rounded-full object-cover" />
               <span className="font-semibold text-xl">Hallway</span>
             </div>
             <p className="text-muted-foreground text-sm leading-relaxed">
