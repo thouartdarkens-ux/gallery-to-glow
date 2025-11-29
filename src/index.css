@@ -60,4 +60,27 @@ All colors MUST be HSL.
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Responsive typography for mobile */
+  @media (max-width: 768px) {
+    html {
+      font-size: 14px;
+    }
+    
+    h1 {
+      @apply text-2xl;
+    }
+    
+    h2 {
+      @apply text-xl;
+    }
+    
+    h3 {
+      @apply text-lg;
+    }
+    
+    h4, h5, h6 {
+      @apply text-base;
+    }
+  }
 }
