@@ -1,10 +1,8 @@
 import { Link } from "react-router-dom";
 import { Instagram, Youtube, Linkedin } from "lucide-react";
 import { SiSnapchat, SiTiktok, SiX } from "react-icons/si";
-
 const Footer = () => {
-  return (
-    <footer className="bg-card border-t mt-auto">
+  return <footer className="bg-card border-t mt-auto">
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
@@ -49,9 +47,7 @@ const Footer = () => {
               <a href="https://www.x.com/hallway_ltd" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground hover:bg-primary/90 transition-colors">
                 <SiX className="h-5 w-5" />
               </a>
-              <a href="https://www.youtube.com/@hallway_ltd" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground hover:bg-primary/90 transition-colors">
-                <Youtube className="h-5 w-5" />
-              </a>
+              
               <a href="https://www.linkedin.com/company/hallwayllc" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground hover:bg-primary/90 transition-colors">
                 <Linkedin className="h-5 w-5" />
               </a>
@@ -68,8 +64,6 @@ const Footer = () => {
           </div>
         </div>
       </div>
-    </footer>
-  );
+    </footer>;
 };
-
 export default Footer;
