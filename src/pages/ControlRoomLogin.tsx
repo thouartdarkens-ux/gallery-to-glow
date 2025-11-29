@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Shield } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 const ControlRoomLogin = () => {
   const [username, setUsername] = useState("");
@@ -17,13 +18,26 @@ const ControlRoomLogin = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simple admin authentication (you can enhance this with proper auth later)
-    if (username === "admin" && password === "admin123") {
+    try {
+      const { data, error } = await supabase
+        .from("admin_credentials")
+        .select("*")
+        .eq("username", username)
+        .eq("password", password)
+        .single();
+
+      if (error || !data) {
+        toast.error("Invalid credentials");
+        setIsLoading(false);
+        return;
+      }
+
       localStorage.setItem("controlRoomAuth", "authenticated");
       toast.success("Access granted");
       navigate("/controlroom");
-    } else {
-      toast.error("Invalid credentials");
+    } catch (error) {
+      console.error("Login error:", error);
+      toast.error("Login failed");
     }
     
     setIsLoading(false);

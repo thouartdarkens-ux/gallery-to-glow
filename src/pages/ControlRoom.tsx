@@ -26,6 +26,13 @@ const ControlRoom = () => {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<any>(null);
   
+  // Admin credentials states
+  const [adminUsername, setAdminUsername] = useState("");
+  const [adminPassword, setAdminPassword] = useState("");
+  const [newAdminUsername, setNewAdminUsername] = useState("");
+  const [newAdminPassword, setNewAdminPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  
   // Form states
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -54,7 +61,25 @@ const ControlRoom = () => {
     }
     
     loadUsers();
+    loadAdminCredentials();
   }, [navigate]);
+
+  const loadAdminCredentials = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("admin_credentials")
+        .select("*")
+        .single();
+
+      if (error) throw error;
+      if (data) {
+        setAdminUsername(data.username);
+        setNewAdminUsername(data.username);
+      }
+    } catch (error) {
+      console.error("Error loading admin credentials:", error);
+    }
+  };
 
   const loadUsers = async () => {
     try {
@@ -219,6 +244,46 @@ const ControlRoom = () => {
     }
   };
 
+  const handleUpdateCredentials = async () => {
+    try {
+      if (!newAdminPassword || !confirmPassword) {
+        toast.error("Please fill in both password fields");
+        return;
+      }
+
+      if (newAdminPassword !== confirmPassword) {
+        toast.error("Passwords do not match");
+        return;
+      }
+
+      if (newAdminPassword.length < 6) {
+        toast.error("Password must be at least 6 characters");
+        return;
+      }
+
+      const { error } = await supabase
+        .from("admin_credentials")
+        .update({
+          username: newAdminUsername,
+          password: newAdminPassword,
+        })
+        .eq("username", adminUsername);
+
+      if (error) throw error;
+
+      setAdminUsername(newAdminUsername);
+      setNewAdminPassword("");
+      setConfirmPassword("");
+      toast.success("Credentials updated successfully");
+      
+      // Update localStorage to reflect new authentication
+      localStorage.setItem("controlRoomAuth", "authenticated");
+    } catch (error) {
+      console.error("Error updating credentials:", error);
+      toast.error("Failed to update credentials");
+    }
+  };
+
   const handleLogout = () => {
     localStorage.removeItem("controlRoomAuth");
     navigate("/controlroomlogin");
@@ -253,6 +318,46 @@ const ControlRoom = () => {
             Logout
           </Button>
         </div>
+
+        {/* Admin Credentials Management */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Update Control Room Credentials</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="max-w-md space-y-4">
+              <div className="space-y-2">
+                <Label>Username</Label>
+                <Input 
+                  value={newAdminUsername} 
+                  onChange={(e) => setNewAdminUsername(e.target.value)}
+                  placeholder="Enter new username"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>New Password</Label>
+                <Input 
+                  type="password" 
+                  value={newAdminPassword} 
+                  onChange={(e) => setNewAdminPassword(e.target.value)}
+                  placeholder="Enter new password"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Confirm Password</Label>
+                <Input 
+                  type="password" 
+                  value={confirmPassword} 
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Confirm new password"
+                />
+              </div>
+              <Button onClick={handleUpdateCredentials} className="w-full">
+                Update Credentials
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Search and Add */}
         <Card>
