@@ -40,6 +40,10 @@ const ControlRoom = () => {
   const [country, setCountry] = useState("");
   const [level, setLevel] = useState("Support Volunteer");
   const [verified, setVerified] = useState(false);
+  const [accumulatedPoints, setAccumulatedPoints] = useState(0);
+  const [deductedPoints, setDeductedPoints] = useState(0);
+  const [totalPoints, setTotalPoints] = useState(0);
+  const [pendingPoints, setPendingPoints] = useState(0);
 
   useEffect(() => {
     // Check authentication
@@ -84,6 +88,10 @@ const ControlRoom = () => {
     setCountry("");
     setLevel("Support Volunteer");
     setVerified(false);
+    setAccumulatedPoints(0);
+    setDeductedPoints(0);
+    setTotalPoints(0);
+    setPendingPoints(0);
     setEditingUser(null);
   };
 
@@ -102,6 +110,10 @@ const ControlRoom = () => {
     setCountry(user.country || "");
     setLevel(user.level || "Support Volunteer");
     setVerified(user.verified);
+    setAccumulatedPoints(user.accumulated_points || 0);
+    setDeductedPoints(user.deducted_points || 0);
+    setTotalPoints(user.total_points || 0);
+    setPendingPoints(user.pending_points || 0);
   };
 
   const handleAddUser = async () => {
@@ -161,6 +173,10 @@ const ControlRoom = () => {
         country: country || null,
         level,
         verified,
+        accumulated_points: accumulatedPoints,
+        deducted_points: deductedPoints,
+        total_points: totalPoints,
+        pending_points: pendingPoints,
       };
 
       if (password) {
@@ -406,6 +422,22 @@ const ControlRoom = () => {
                                 <div className="space-y-2">
                                   <Label>Level</Label>
                                   <Input value={level} onChange={(e) => setLevel(e.target.value)} />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label>Accumulated Points</Label>
+                                  <Input type="number" value={accumulatedPoints} onChange={(e) => setAccumulatedPoints(Number(e.target.value))} />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label>Deducted Points</Label>
+                                  <Input type="number" value={deductedPoints} onChange={(e) => setDeductedPoints(Number(e.target.value))} />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label>Total Points</Label>
+                                  <Input type="number" value={totalPoints} onChange={(e) => setTotalPoints(Number(e.target.value))} />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label>Pending Points</Label>
+                                  <Input type="number" value={pendingPoints} onChange={(e) => setPendingPoints(Number(e.target.value))} />
                                 </div>
                               </div>
                               <Button onClick={handleUpdateUser} className="w-full mt-4">Update User</Button>
