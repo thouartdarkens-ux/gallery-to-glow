@@ -1,10 +1,8 @@
 import { Link } from "react-router-dom";
 import { Twitter, Facebook, Instagram, Youtube } from "lucide-react";
 import logo from "@/assets/logo.jpg";
-
 const Header = () => {
-  return (
-    <header className="border-b bg-card">
+  return <header className="border-b bg-card">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between py-2 text-sm">
           <div className="flex items-center gap-4">
@@ -41,9 +39,7 @@ const Header = () => {
               <span className="font-semibold text-xl">Hallway</span>
             </Link>
             <nav className="flex items-center gap-8">
-              <Link to="/" className="text-foreground hover:text-primary font-medium">
-                Home
-              </Link>
+              
               <Link to="/support" className="text-foreground hover:text-primary font-medium">
                 Support The Project
               </Link>
@@ -57,8 +53,6 @@ const Header = () => {
           </div>
         </div>
       </div>
-    </header>
-  );
+    </header>;
 };
-
 export default Header;
