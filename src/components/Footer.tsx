@@ -26,7 +26,7 @@ const Footer = () => {
               <Link to="/vendor" className="block text-muted-foreground hover:text-foreground text-sm">
                 Become A Vendor
               </Link>
-              <Link to="/waitlist" className="block text-muted-foreground hover:text-foreground text-sm">
+              <Link to="/landingpage" className="block text-muted-foreground hover:text-foreground text-sm">
                 Join The Waitlist
               </Link>
             </nav>
