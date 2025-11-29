@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import { Instagram, Facebook, Youtube, Linkedin } from "lucide-react";
+import { Instagram, Youtube, Linkedin } from "lucide-react";
+import { SiSnapchat, SiTiktok, SiX } from "react-icons/si";
 
 const Footer = () => {
   return (
@@ -35,17 +36,23 @@ const Footer = () => {
           
           <div>
             <h3 className="font-semibold mb-4">Social Media</h3>
-            <div className="flex gap-3">
-              <a href="#" className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground hover:bg-primary/90 transition-colors">
+            <div className="flex flex-wrap gap-3">
+              <a href="https://www.snapchat.com/add/hallway_ltd" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground hover:bg-primary/90 transition-colors">
+                <SiSnapchat className="h-5 w-5" />
+              </a>
+              <a href="https://www.tiktok.com/@hallway_ltd" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground hover:bg-primary/90 transition-colors">
+                <SiTiktok className="h-5 w-5" />
+              </a>
+              <a href="https://www.instagram.com/hallway_ltd" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground hover:bg-primary/90 transition-colors">
                 <Instagram className="h-5 w-5" />
               </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground hover:bg-primary/90 transition-colors">
-                <Facebook className="h-5 w-5" />
+              <a href="https://www.x.com/hallway_ltd" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground hover:bg-primary/90 transition-colors">
+                <SiX className="h-5 w-5" />
               </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground hover:bg-primary/90 transition-colors">
+              <a href="https://www.youtube.com/@hallway_ltd" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground hover:bg-primary/90 transition-colors">
                 <Youtube className="h-5 w-5" />
               </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground hover:bg-primary/90 transition-colors">
+              <a href="https://www.linkedin.com/company/hallwayllc" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground hover:bg-primary/90 transition-colors">
                 <Linkedin className="h-5 w-5" />
               </a>
             </div>

@@ -116,9 +116,9 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className="min-h-screen flex bg-background">
-      {/* Sidebar */}
-      <aside className="w-64 bg-card border-r flex flex-col">
+    <div className="min-h-screen flex flex-col lg:flex-row bg-background">
+      {/* Sidebar - hidden on mobile */}
+      <aside className="hidden lg:flex w-64 bg-card border-r flex-col">
         <div className="p-6">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
@@ -203,13 +203,13 @@ const Dashboard = () => {
       <main className="flex-1 overflow-auto">
         {/* Top Bar */}
         <header className="bg-card border-b sticky top-0 z-10">
-          <div className="flex items-center justify-between px-8 py-4">
+          <div className="flex items-center justify-between px-4 lg:px-8 py-4">
             <div>
-              <h1 className="text-2xl font-bold text-foreground">Welcome Back, {currentUser.full_name?.split(' ')[0] || 'User'}</h1>
-              <p className="text-sm text-muted-foreground">Here's what it looks like today</p>
+              <h1 className="text-xl lg:text-2xl font-bold text-foreground">Welcome Back, {currentUser.full_name?.split(' ')[0] || 'User'}</h1>
+              <p className="text-xs lg:text-sm text-muted-foreground">Here's what it looks like today</p>
             </div>
-            <div className="flex items-center gap-4">
-              <div className="relative w-96">
+            <div className="flex items-center gap-2 lg:gap-4">
+              <div className="relative hidden md:block w-48 lg:w-96">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input placeholder="Search for anything...." className="pl-9" />
               </div>
@@ -217,7 +217,7 @@ const Dashboard = () => {
                 <Bell className="h-5 w-5" />
                 <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-destructive rounded-full"></span>
               </Button>
-              <Avatar>
+              <Avatar className="h-8 w-8 lg:h-10 lg:w-10">
                 <AvatarImage src={currentUser.avatar_url} />
                 <AvatarFallback>{currentUser.full_name?.slice(0, 2).toUpperCase() || 'U'}</AvatarFallback>
               </Avatar>
@@ -226,9 +226,9 @@ const Dashboard = () => {
         </header>
 
         {/* Dashboard Content */}
-        <div className="p-8 space-y-8">
+        <div className="p-4 lg:p-8 space-y-6 lg:space-y-8">
           {/* Stats Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
             {stats.map((stat, index) => (
               <Card key={index}>
                 <CardContent className="pt-6">
@@ -254,22 +254,22 @@ const Dashboard = () => {
             ))}
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
             {/* Profile Card */}
             <Card className="lg:col-span-2">
               <CardContent className="pt-6">
-                <div className="flex items-start gap-6">
-                  <Avatar className="h-24 w-24">
+                <div className="flex flex-col md:flex-row items-start gap-4 md:gap-6">
+                  <Avatar className="h-20 w-20 md:h-24 md:w-24">
                     <AvatarImage src={currentUser.avatar_url} />
                     <AvatarFallback>{currentUser.full_name?.slice(0, 2).toUpperCase() || 'U'}</AvatarFallback>
                   </Avatar>
                   <div className="flex-1 space-y-4">
-                    <div className="flex items-center gap-2">
-                      <h3 className="text-xl font-bold">{currentUser.full_name}</h3>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h3 className="text-lg md:text-xl font-bold">{currentUser.full_name}</h3>
                       {currentUser.verified && <CheckCircle2 className="h-5 w-5 text-primary" />}
                       <img src="https://images.unsplash.com/photo-1578301978018-3005759f48f7?w=32&h=32&fit=crop" alt="Badge" className="h-6 w-6" />
                     </div>
-                    <div className="grid grid-cols-3 gap-6">
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
                       <div>
                         <p className="text-xs text-muted-foreground uppercase">Referral ID</p>
                         <p className="text-lg font-semibold text-primary">{currentUser.reference_code}</p>
@@ -283,7 +283,7 @@ const Dashboard = () => {
                         <p className="text-lg font-semibold">{currentUser.referrals_count}</p>
                       </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-6 pt-2">
+                    <div className="grid grid-cols-2 gap-4 md:gap-6 pt-2">
                       <div>
                         <p className="text-xs text-muted-foreground uppercase">Level</p>
                         <p className="text-base font-medium">{currentUser.level}</p>
@@ -294,7 +294,7 @@ const Dashboard = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="flex flex-col items-center">
+                  <div className="hidden lg:flex flex-col items-center">
                     <img 
                       src="https://images.unsplash.com/photo-1567427017947-545c5f8d16ad?w=200&h=200&fit=crop" 
                       alt="Achievement badge" 
