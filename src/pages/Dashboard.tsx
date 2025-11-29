@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import logo from "@/assets/logo.jpg";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -121,9 +122,7 @@ const Dashboard = () => {
       <aside className="hidden lg:flex w-64 bg-card border-r flex-col">
         <div className="p-6">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold">H</span>
-            </div>
+            <img src={logo} alt="Hallway Logo" className="w-8 h-8 rounded-full object-cover" />
             <span className="font-semibold">Hallway Volunteer Portal</span>
           </div>
         </div>
