@@ -137,7 +137,6 @@ export type Database = {
           email: string
           id: string
           referral_code: string | null
-          referred_count: number | null
           status: string | null
         }
         Insert: {
@@ -145,7 +144,6 @@ export type Database = {
           email: string
           id?: string
           referral_code?: string | null
-          referred_count?: number | null
           status?: string | null
         }
         Update: {
@@ -153,7 +151,6 @@ export type Database = {
           email?: string
           id?: string
           referral_code?: string | null
-          referred_count?: number | null
           status?: string | null
         }
         Relationships: []
