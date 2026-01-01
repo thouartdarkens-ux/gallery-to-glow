@@ -25,9 +25,9 @@ const Footer = () => {
               <Link to="/vendor" className="block text-muted-foreground hover:text-foreground text-sm">
                 Become A Vendor
               </Link>
-              <Link to="/landingpage" className="block text-muted-foreground hover:text-foreground text-sm">
+              <a href="https://hallway.africa" target="_blank" rel="noopener noreferrer" className="block text-muted-foreground hover:text-foreground text-sm">
                 Join The Waitlist
-              </Link>
+              </a>
             </nav>
           </div>
           
