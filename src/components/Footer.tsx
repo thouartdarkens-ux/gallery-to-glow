@@ -11,9 +11,7 @@ const Footer = () => {
               <img src={logo} alt="Hallway Logo" className="w-10 h-10 rounded-full object-cover" />
               <span className="font-semibold text-xl">Hallway</span>
             </div>
-            <p className="text-muted-foreground text-sm leading-relaxed">
-              Hallway has a passion for empowering students. We provide a student-first marketplace that makes it simple to buy, sell, and support projects — all in one place.
-            </p>
+            <p className="text-muted-foreground text-sm leading-relaxed">Hallway is built by students and volunteers who believe in creating real opportunities on campus and beyond. This portal exists to support collaboration, accountability, and shared growth.</p>
           </div>
           
           <div>
