@@ -3,10 +3,8 @@ import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import logo from "@/assets/logo.jpg";
-
 const Index = () => {
-  return (
-    <div className="min-h-screen flex flex-col bg-background">
+  return <div className="min-h-screen flex flex-col bg-background">
       <Header />
       
       <main className="flex-1 flex items-center justify-center py-20 px-4 relative overflow-hidden">
@@ -19,9 +17,7 @@ const Index = () => {
             </div>
             
             <div className="space-y-4">
-              <h1 className="text-5xl md:text-6xl font-bold text-foreground">
-                Empowering Students Through Collaboration
-              </h1>
+              <h1 className="text-5xl md:text-6xl font-bold text-foreground">The Space for Builders of Impact</h1>
               <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                 Hallway has a passion for empowering students. We provide a student-first marketplace that makes it simple to buy, sell, and support projects — all in one place.
               </p>
@@ -40,8 +36,6 @@ const Index = () => {
       </main>
       
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
