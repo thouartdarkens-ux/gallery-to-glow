@@ -56,8 +56,8 @@ const Footer = () => {
       <div className="border-t">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between text-sm text-muted-foreground">
-            <span>Hallway</span>
-            <span>© Grant Reese Arthur HW2025</span>
+            <span>All rights Reserved</span>
+            <span>© Hallway Technologies Ltd</span>
           </div>
         </div>
       </div>
