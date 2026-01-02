@@ -8,6 +8,7 @@ import { ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import volunteersImage from "@/assets/volunteers.jpeg";
 const Login = () => {
   const [referenceCode, setReferenceCode] = useState("");
   const [password, setPassword] = useState("");
@@ -79,7 +80,7 @@ const Login = () => {
             </div>
             
             <div className="hidden md:block">
-              <img src="https://images.unsplash.com/photo-1531482615713-2afd69097998?w=400&h=300&fit=crop" alt="Volunteer illustration" className="rounded-lg shadow-xl w-full max-w-sm opacity-90" />
+              <img src={volunteersImage} alt="Hallway Volunteers" className="rounded-lg shadow-xl w-full max-w-sm" />
             </div>
           </div>
           
