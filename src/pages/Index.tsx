@@ -26,7 +26,7 @@ const Index = () => {
                 <Link to="/login">Volunteer Login</Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="text-lg px-8">
-                <Link to="/support">Support The Project</Link>
+                <Link to="/support">Become a Volunteer</Link>
               </Button>
             </div>
           </div>

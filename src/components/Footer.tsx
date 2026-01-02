@@ -18,7 +18,7 @@ const Footer = () => {
             <h3 className="font-semibold mb-4">Home</h3>
             <nav className="space-y-2">
               <Link to="/support" className="block text-muted-foreground hover:text-foreground text-sm">
-                Support The Project
+                Become a Volunteer
               </Link>
               <Link to="/vendor" className="block text-muted-foreground hover:text-foreground text-sm">
                 Become A Vendor
