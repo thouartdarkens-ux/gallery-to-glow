@@ -18,9 +18,7 @@ const Index = () => {
             
             <div className="space-y-4">
               <h1 className="text-5xl md:text-6xl font-bold text-foreground">The Space for Builders of Impact</h1>
-              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                Hallway has a passion for empowering students. We provide a student-first marketplace that makes it simple to buy, sell, and support projects — all in one place.
-              </p>
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">As a Hallway volunteer, you become part of a community building real opportunities for students — gaining hands-on experience, visibility, and a front-row seat to shaping something impactful.</p>
             </div>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
