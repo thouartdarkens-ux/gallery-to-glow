@@ -8,41 +8,35 @@ import { ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-
 const Login = () => {
   const [referenceCode, setReferenceCode] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
+  const {
+    toast
+  } = useToast();
   const navigate = useNavigate();
-
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-
     try {
-      const response = await fetch(
-        'https://ttxsgqrnhhsuuhkwzpak.supabase.co/functions/v1/login',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            referenceCode,
-            password,
-          }),
-        }
-      );
-
+      const response = await fetch('https://ttxsgqrnhhsuuhkwzpak.supabase.co/functions/v1/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          referenceCode,
+          password
+        })
+      });
       const data = await response.json();
-
       if (!response.ok) {
         toast({
           title: "Login failed",
           description: data.error || "Invalid credentials",
-          variant: "destructive",
+          variant: "destructive"
         });
         setIsLoading(false);
         return;
@@ -50,26 +44,22 @@ const Login = () => {
 
       // Store user data in localStorage
       localStorage.setItem('currentUser', JSON.stringify(data.user));
-
       toast({
         title: "Welcome back!",
-        description: "You have successfully logged in.",
+        description: "You have successfully logged in."
       });
-
       navigate("/dashboard");
     } catch (error) {
       console.error('Login error:', error);
       toast({
         title: "Error",
         description: "An unexpected error occurred. Please try again.",
-        variant: "destructive",
+        variant: "destructive"
       });
       setIsLoading(false);
     }
   };
-
-  return (
-    <div className="min-h-screen flex flex-col bg-background">
+  return <div className="min-h-screen flex flex-col bg-background">
       <Header />
       
       <main className="flex-1 flex items-center justify-center py-12 px-4 relative overflow-hidden">
@@ -77,11 +67,7 @@ const Login = () => {
         
         <div className="w-full max-w-5xl grid md:grid-cols-2 gap-12 items-center relative z-10">
           <div className="space-y-6">
-            <div className="flex justify-center md:justify-start">
-              <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center shadow-lg">
-                <span className="text-primary-foreground font-bold text-2xl">H</span>
-              </div>
-            </div>
+            
             
             <div className="space-y-2 text-center md:text-left">
               <h1 className="text-3xl font-bold text-foreground">
@@ -93,11 +79,7 @@ const Login = () => {
             </div>
             
             <div className="hidden md:block">
-              <img 
-                src="https://images.unsplash.com/photo-1531482615713-2afd69097998?w=400&h=300&fit=crop" 
-                alt="Volunteer illustration" 
-                className="rounded-lg shadow-xl w-full max-w-sm opacity-90"
-              />
+              <img src="https://images.unsplash.com/photo-1531482615713-2afd69097998?w=400&h=300&fit=crop" alt="Volunteer illustration" className="rounded-lg shadow-xl w-full max-w-sm opacity-90" />
             </div>
           </div>
           
@@ -113,12 +95,7 @@ const Login = () => {
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="referenceCode">Volunteer Reference Code</Label>
-                  <Input
-                    id="referenceCode"
-                    placeholder="Enter your reference code"
-                    value={referenceCode}
-                    onChange={(e) => setReferenceCode(e.target.value)}
-                  />
+                  <Input id="referenceCode" placeholder="Enter your reference code" value={referenceCode} onChange={e => setReferenceCode(e.target.value)} />
                 </div>
                 
                 <div className="space-y-2">
@@ -128,25 +105,12 @@ const Login = () => {
                       Forgot password?
                     </Link>
                   </div>
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="Enter your password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
+                  <Input id="password" type="password" placeholder="Enter your password" value={password} onChange={e => setPassword(e.target.value)} />
                 </div>
                 
                 <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="remember"
-                    checked={rememberMe}
-                    onCheckedChange={(checked) => setRememberMe(checked as boolean)}
-                  />
-                  <label
-                    htmlFor="remember"
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
+                  <Checkbox id="remember" checked={rememberMe} onCheckedChange={checked => setRememberMe(checked as boolean)} />
+                  <label htmlFor="remember" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                     Remember me
                   </label>
                 </div>
@@ -177,8 +141,6 @@ const Login = () => {
       </main>
       
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default Login;
