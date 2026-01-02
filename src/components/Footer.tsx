@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Instagram, Youtube, Linkedin } from "lucide-react";
 import { SiSnapchat, SiTiktok, SiX } from "react-icons/si";
-import logo from "@/assets/logo.jpg";
+import logo from "@/assets/logo.png";
 const Footer = () => {
   return <footer className="bg-card border-t mt-auto">
       <div className="container mx-auto px-4 py-12">

@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Twitter, Facebook, Instagram, Youtube } from "lucide-react";
-import logo from "@/assets/logo.jpg";
+import logo from "@/assets/logo.png";
 const Header = () => {
   return <header className="border-b bg-card">
       <div className="container mx-auto px-4">
