@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import logo from "@/assets/logo.jpg";
+import logo from "@/assets/logo.png";
 const Index = () => {
   return <div className="min-h-screen flex flex-col bg-background">
       <Header />
