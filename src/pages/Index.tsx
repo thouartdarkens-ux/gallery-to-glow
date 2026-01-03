@@ -13,7 +13,7 @@ const Index = () => {
         <div className="container mx-auto relative z-10">
           <div className="max-w-4xl mx-auto text-center space-y-8">
             <div className="flex justify-center">
-              <img src={logo} alt="Hallway Logo" className="w-20 h-20 rounded-full object-cover shadow-2xl" />
+              <img src={logo} alt="Hallway Logo" className="w-20 h-20 object-cover" />
             </div>
             
             <div className="space-y-4">
