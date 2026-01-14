@@ -160,7 +160,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      update_user_referrals_count: { Args: never; Returns: undefined }
     }
     Enums: {
       [_ in never]: never
