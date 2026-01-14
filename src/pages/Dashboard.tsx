@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Search, Bell, LogOut, LayoutDashboard, Award, Settings, LifeBuoy, TrendingUp, TrendingDown, CheckCircle2 } from "lucide-react";
+import { Search, Bell, LogOut, LayoutDashboard, Award, Settings, LifeBuoy, TrendingUp, TrendingDown, CheckCircle2, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -18,6 +18,7 @@ const Dashboard = () => {
   const [leaderboard, setLeaderboard] = useState<any[]>([]);
   const [waitlistMembers, setWaitlistMembers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showMyReferrals, setShowMyReferrals] = useState(false);
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -104,6 +105,11 @@ const Dashboard = () => {
     }
     return `${localPart.substring(0, 3)}${'*'.repeat(localPart.length - 3)}@${domain}`;
   };
+
+  // Filter waitlist based on toggle
+  const filteredWaitlist = showMyReferrals 
+    ? waitlistMembers.filter(member => member.referral_code === currentUser?.reference_code)
+    : waitlistMembers;
 
   if (loading || !currentUser) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
@@ -344,32 +350,48 @@ const Dashboard = () => {
           {/* Waitlist Table */}
           <Card>
             <CardHeader>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between flex-wrap gap-2">
                 <div>
                   <CardTitle>New Waitlist Members</CardTitle>
                   <p className="text-sm text-muted-foreground">
-                    {waitlistMembers.length === 0
-                      ? "No one on the waitlist yet"
-                      : `${waitlistMembers.length} people joined the waitlist`}
+                    {filteredWaitlist.length === 0
+                      ? showMyReferrals ? "No referrals from you yet" : "No one on the waitlist yet"
+                      : showMyReferrals 
+                        ? `${filteredWaitlist.length} people joined using your referral code`
+                        : `${filteredWaitlist.length} people joined the waitlist`}
                   </p>
                 </div>
-                <Button variant="link" className="text-primary">
-                  See Full List →
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button 
+                    variant={showMyReferrals ? "default" : "outline"} 
+                    size="sm"
+                    onClick={() => setShowMyReferrals(!showMyReferrals)}
+                    className="gap-2"
+                  >
+                    <Filter className="h-4 w-4" />
+                    {showMyReferrals ? "My Referrals" : "All Members"}
+                  </Button>
+                  <Button variant="link" className="text-primary">
+                    See Full List →
+                  </Button>
+                </div>
               </div>
             </CardHeader>
             <CardContent>
-              {waitlistMembers.length === 0 ? (
+              {filteredWaitlist.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
-                  <p>No waitlist members yet</p>
+                  <p>{showMyReferrals ? "No one has used your referral code yet" : "No waitlist members yet"}</p>
                 </div>
               ) : (
-                <div className="border rounded-lg overflow-hidden">
+                <div className="border rounded-lg overflow-hidden overflow-x-auto">
                   <table className="w-full">
                     <thead className="bg-muted/50">
                       <tr>
                         <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
                           Email Address ↓
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
+                          Referral Code ↓
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
                           Join Date ↓
@@ -380,9 +402,14 @@ const Dashboard = () => {
                       </tr>
                     </thead>
                     <tbody className="divide-y">
-                      {waitlistMembers.map((member, index) => (
+                      {filteredWaitlist.map((member, index) => (
                         <tr key={member.id || index} className="hover:bg-muted/50">
                           <td className="px-6 py-4 text-sm">{maskEmail(member.email)}</td>
+                          <td className="px-6 py-4 text-sm">
+                            <Badge variant={member.referral_code === currentUser?.reference_code ? "default" : "outline"}>
+                              {member.referral_code || "—"}
+                            </Badge>
+                          </td>
                           <td className="px-6 py-4 text-sm">{new Date(member.created_at).toLocaleDateString()}</td>
                           <td className="px-6 py-4 text-sm">
                             <Badge variant={member.status === 'verified' ? 'default' : 'secondary'}>
