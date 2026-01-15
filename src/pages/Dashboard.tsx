@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import logo from "@/assets/logo.jpg";
+import volunteerBadge from "@/assets/volunteer-badge.jpg";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -297,19 +298,12 @@ const Dashboard = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="hidden lg:flex flex-col items-center">
+                  <div className="hidden lg:flex flex-col items-center justify-center bg-gradient-to-br from-muted/30 to-muted/60 rounded-xl p-4 min-w-[180px]">
                     <img 
-                      src="https://images.unsplash.com/photo-1567427017947-545c5f8d16ad?w=200&h=200&fit=crop" 
+                      src={volunteerBadge}
                       alt="Achievement badge" 
-                      className="w-32 h-32 object-contain"
+                      className="w-36 h-36 object-contain drop-shadow-lg"
                     />
-                    <div className="mt-2 space-y-1 text-center text-xs">
-                      <p className="flex items-center gap-1 text-accent">
-                        <span className="font-medium">🏆 Top 5 : Hallway Star Volunteer</span>
-                      </p>
-                      <p className="text-primary">🔵 Rank 6-10 :Active Volunteer</p>
-                      <p className="text-pink-500">💮 Rank 11-20 :Support Volunteer</p>
-                    </div>
                   </div>
                 </div>
               </CardContent>
@@ -376,10 +370,7 @@ const Dashboard = () => {
                           Email Address ↓
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
-                          Join Date ↓
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
-                          Status
+                          Joined ↓
                         </th>
                       </tr>
                     </thead>
@@ -387,11 +378,14 @@ const Dashboard = () => {
                       {waitlistMembers.map((member, index) => (
                         <tr key={member.id || index} className="hover:bg-muted/50">
                           <td className="px-6 py-4 text-sm">{maskEmail(member.email)}</td>
-                          <td className="px-6 py-4 text-sm">{new Date(member.created_at).toLocaleDateString()}</td>
-                          <td className="px-6 py-4 text-sm">
-                            <Badge variant={member.status === 'verified' ? 'default' : 'secondary'}>
-                              {member.status}
-                            </Badge>
+                          <td className="px-6 py-4 text-sm text-muted-foreground">
+                            {new Date(member.created_at).toLocaleDateString('en-US', {
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
                           </td>
                         </tr>
                       ))}
