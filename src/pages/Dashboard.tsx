@@ -6,10 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import logo from "@/assets/logo.jpg";
-import volunteerBadge from "@/assets/volunteer-badge.jpg";
+import volunteerBadge from "@/assets/volunteer-badge.png";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -262,18 +263,28 @@ const Dashboard = () => {
             {/* Profile Card */}
             <Card className="lg:col-span-2">
               <CardContent className="pt-6">
-                <div className="flex flex-col md:flex-row items-start gap-4 md:gap-6">
-                  <Avatar className="h-20 w-20 md:h-24 md:w-24">
-                    <AvatarImage src={currentUser.avatar_url} />
-                    <AvatarFallback>{currentUser.full_name?.slice(0, 2).toUpperCase() || 'U'}</AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 space-y-4">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <h3 className="text-lg md:text-xl font-bold">{currentUser.full_name}</h3>
-                      {currentUser.verified && <CheckCircle2 className="h-5 w-5 text-primary" />}
-                      <img src="https://images.unsplash.com/photo-1578301978018-3005759f48f7?w=32&h=32&fit=crop" alt="Badge" className="h-6 w-6" />
+                <div className="flex flex-col md:flex-row items-stretch gap-4 md:gap-6">
+                  {/* Profile & Name Section */}
+                  <div className="flex items-center gap-4">
+                    <Avatar className="h-20 w-20 md:h-24 md:w-24">
+                      <AvatarImage src={currentUser.avatar_url} />
+                      <AvatarFallback>{currentUser.full_name?.slice(0, 2).toUpperCase() || 'U'}</AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h3 className="text-lg md:text-xl font-bold">{currentUser.full_name}</h3>
+                        {currentUser.verified && <CheckCircle2 className="h-5 w-5 text-primary" />}
+                      </div>
+                      <p className="text-sm text-muted-foreground">{currentUser.email}</p>
                     </div>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+                  </div>
+
+                  <Separator orientation="vertical" className="hidden md:block h-auto" />
+                  <Separator className="md:hidden" />
+
+                  {/* Stats Section */}
+                  <div className="flex-1 space-y-4">
+                    <div className="grid grid-cols-3 gap-4">
                       <div>
                         <p className="text-xs text-muted-foreground uppercase">Referral ID</p>
                         <p className="text-lg font-semibold text-primary">{currentUser.reference_code}</p>
@@ -287,7 +298,10 @@ const Dashboard = () => {
                         <p className="text-lg font-semibold">{currentUser.referrals_count}</p>
                       </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-4 md:gap-6 pt-2">
+
+                    <Separator />
+
+                    <div className="grid grid-cols-2 gap-4">
                       <div>
                         <p className="text-xs text-muted-foreground uppercase">Level</p>
                         <p className="text-base font-medium">{currentUser.level}</p>
@@ -298,11 +312,13 @@ const Dashboard = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="hidden lg:flex flex-col items-center justify-center bg-gradient-to-br from-muted/30 to-muted/60 rounded-xl p-4 min-w-[180px]">
+
+                  {/* Badge Image */}
+                  <div className="hidden lg:flex items-center justify-center min-w-[140px]" style={{ height: '80%', alignSelf: 'center' }}>
                     <img 
                       src={volunteerBadge}
                       alt="Achievement badge" 
-                      className="w-36 h-36 object-contain drop-shadow-lg"
+                      className="h-full w-auto object-contain"
                     />
                   </div>
                 </div>
