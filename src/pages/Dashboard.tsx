@@ -263,62 +263,63 @@ const Dashboard = () => {
             {/* Profile Card */}
             <Card className="lg:col-span-2">
               <CardContent className="pt-6">
-                <div className="flex flex-col md:flex-row items-stretch gap-4 md:gap-6">
-                  {/* Profile & Name Section */}
-                  <div className="flex items-center gap-4">
-                    <Avatar className="h-20 w-20 md:h-24 md:w-24">
-                      <AvatarImage src={currentUser.avatar_url} />
-                      <AvatarFallback>{currentUser.full_name?.slice(0, 2).toUpperCase() || 'U'}</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <h3 className="text-lg md:text-xl font-bold">{currentUser.full_name}</h3>
-                        {currentUser.verified && <CheckCircle2 className="h-5 w-5 text-primary" />}
-                      </div>
-                      <p className="text-sm text-muted-foreground">{currentUser.email}</p>
-                    </div>
-                  </div>
-
-                  <Separator orientation="vertical" className="hidden md:block h-auto" />
-                  <Separator className="md:hidden" />
-
-                  {/* Stats Section */}
-                  <div className="flex-1 space-y-4">
-                    <div className="grid grid-cols-3 gap-4">
+                <div className="flex flex-row gap-6">
+                  {/* Left Section - User Info */}
+                  <div className="flex-1 flex flex-col">
+                    {/* Profile & Name Section - Top */}
+                    <div className="flex items-center gap-4 pb-4">
+                      <Avatar className="h-16 w-16">
+                        <AvatarImage src={currentUser.avatar_url} />
+                        <AvatarFallback>{currentUser.full_name?.slice(0, 2).toUpperCase() || 'U'}</AvatarFallback>
+                      </Avatar>
                       <div>
-                        <p className="text-xs text-muted-foreground uppercase">Referral ID</p>
-                        <p className="text-lg font-semibold text-primary">{currentUser.reference_code}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground uppercase">Points</p>
-                        <p className="text-lg font-semibold">{currentUser.total_points}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground uppercase">Referrals</p>
-                        <p className="text-lg font-semibold">{currentUser.referrals_count}</p>
+                        <div className="flex items-center gap-2">
+                          <h3 className="text-xl font-bold">{currentUser.full_name}</h3>
+                          {currentUser.verified && <CheckCircle2 className="h-5 w-5 text-primary" />}
+                        </div>
+                        <p className="text-sm text-muted-foreground">{currentUser.email}</p>
                       </div>
                     </div>
 
                     <Separator />
 
-                    <div className="grid grid-cols-2 gap-4">
+                    {/* Stats Row */}
+                    <div className="grid grid-cols-3 gap-6 py-4">
                       <div>
-                        <p className="text-xs text-muted-foreground uppercase">Level</p>
-                        <p className="text-base font-medium">{currentUser.level}</p>
+                        <p className="text-xs text-muted-foreground uppercase tracking-wide">Referral ID</p>
+                        <p className="text-lg font-semibold text-primary mt-1">{currentUser.reference_code}</p>
                       </div>
                       <div>
-                        <p className="text-xs text-muted-foreground uppercase">Rank</p>
-                        <p className="text-base font-medium">{currentUser.rank}{currentUser.rank === 1 ? 'st' : currentUser.rank === 2 ? 'nd' : currentUser.rank === 3 ? 'rd' : 'th'}</p>
+                        <p className="text-xs text-muted-foreground uppercase tracking-wide">Points</p>
+                        <p className="text-lg font-semibold mt-1">{currentUser.total_points}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground uppercase tracking-wide">Referrals</p>
+                        <p className="text-lg font-semibold mt-1">{currentUser.referrals_count}</p>
+                      </div>
+                    </div>
+
+                    <Separator />
+
+                    {/* Level & Rank Row */}
+                    <div className="grid grid-cols-2 gap-6 pt-4">
+                      <div>
+                        <p className="text-xs text-muted-foreground uppercase tracking-wide">Level</p>
+                        <p className="text-base font-medium mt-1">{currentUser.level}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground uppercase tracking-wide">Rank</p>
+                        <p className="text-base font-medium mt-1">{currentUser.rank}{currentUser.rank === 1 ? 'st' : currentUser.rank === 2 ? 'nd' : currentUser.rank === 3 ? 'rd' : 'th'}</p>
                       </div>
                     </div>
                   </div>
 
-                  {/* Badge Image */}
-                  <div className="hidden lg:flex items-center justify-center min-w-[140px]" style={{ height: '80%', alignSelf: 'center' }}>
+                  {/* Right Section - Badge Image */}
+                  <div className="hidden lg:flex items-center justify-center px-4">
                     <img 
                       src={volunteerBadge}
                       alt="Achievement badge" 
-                      className="h-full w-auto object-contain"
+                      className="h-40 w-auto object-contain"
                     />
                   </div>
                 </div>
