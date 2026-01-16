@@ -62,8 +62,9 @@ Deno.serve(async (req) => {
 
     // Prepare insert data
     const insertData: { email: string; referral_code?: string } = { email };
-    if (referral_code && typeof referral_code === "string" && referral_code.trim()) {
-      insertData.referral_code = referral_code.trim();
+    const trimmedReferralCode = referral_code && typeof referral_code === "string" ? referral_code.trim() : null;
+    if (trimmedReferralCode) {
+      insertData.referral_code = trimmedReferralCode;
     }
 
     console.log("Inserting into waitlist:", insertData);
@@ -93,6 +94,39 @@ Deno.serve(async (req) => {
     }
 
     console.log("Successfully added to waitlist:", data);
+
+    // If a referral code was used, add 10 points to the referrer
+    if (trimmedReferralCode) {
+      console.log("Processing referral points for code:", trimmedReferralCode);
+      
+      // First get the current points
+      const { data: referrerData, error: referrerFetchError } = await supabase
+        .from("users")
+        .select("id, total_points, accumulated_points")
+        .eq("reference_code", trimmedReferralCode)
+        .maybeSingle();
+
+      if (referrerFetchError) {
+        console.error("Failed to fetch referrer:", referrerFetchError);
+      } else if (referrerData) {
+        // Update with incremented points
+        const { error: updateError } = await supabase
+          .from("users")
+          .update({
+            total_points: (referrerData.total_points || 0) + 10,
+            accumulated_points: (referrerData.accumulated_points || 0) + 10,
+          })
+          .eq("id", referrerData.id);
+
+        if (updateError) {
+          console.error("Failed to update referrer points:", updateError);
+        } else {
+          console.log("Successfully added 10 points to referrer:", referrerData.id);
+        }
+      } else {
+        console.log("No user found with reference_code:", trimmedReferralCode);
+      }
+    }
 
     return new Response(
       JSON.stringify({ success: true, data }),
