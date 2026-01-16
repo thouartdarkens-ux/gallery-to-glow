@@ -7,7 +7,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Shield, Plus, Pencil, Trash2, LogOut, Search, Users, Trophy, Mail } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Shield, Plus, Pencil, Trash2, LogOut, Search, Users, Trophy, Mail, ChevronDown, ChevronUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -28,6 +30,10 @@ const ControlRoom = () => {
   const [waitlistSearchQuery, setWaitlistSearchQuery] = useState("");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<any>(null);
+  
+  // Collapsible states
+  const [isCredentialsOpen, setIsCredentialsOpen] = useState(false);
+  const [isUsersOpen, setIsUsersOpen] = useState(true);
   
   // Admin credentials states
   const [adminUsername, setAdminUsername] = useState("");
@@ -348,128 +354,149 @@ const ControlRoom = () => {
         </div>
 
         {/* Admin Credentials Management */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Update Control Room Credentials</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="max-w-md space-y-4">
-              <div className="space-y-2">
-                <Label>Username</Label>
-                <Input 
-                  value={newAdminUsername} 
-                  onChange={(e) => setNewAdminUsername(e.target.value)}
-                  placeholder="Enter new username"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>New Password</Label>
-                <Input 
-                  type="password" 
-                  value={newAdminPassword} 
-                  onChange={(e) => setNewAdminPassword(e.target.value)}
-                  placeholder="Enter new password"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Confirm Password</Label>
-                <Input 
-                  type="password" 
-                  value={confirmPassword} 
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="Confirm new password"
-                />
-              </div>
-              <Button onClick={handleUpdateCredentials} className="w-full">
-                Update Credentials
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        <Collapsible open={isCredentialsOpen} onOpenChange={setIsCredentialsOpen}>
+          <Card>
+            <CollapsibleTrigger asChild>
+              <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors">
+                <div className="flex items-center justify-between">
+                  <CardTitle>Update Control Room Credentials</CardTitle>
+                  {isCredentialsOpen ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+                </div>
+              </CardHeader>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <CardContent>
+                <div className="max-w-md space-y-4">
+                  <div className="space-y-2">
+                    <Label>Username</Label>
+                    <Input 
+                      value={newAdminUsername} 
+                      onChange={(e) => setNewAdminUsername(e.target.value)}
+                      placeholder="Enter new username"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>New Password</Label>
+                    <Input 
+                      type="password" 
+                      value={newAdminPassword} 
+                      onChange={(e) => setNewAdminPassword(e.target.value)}
+                      placeholder="Enter new password"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Confirm Password</Label>
+                    <Input 
+                      type="password" 
+                      value={confirmPassword} 
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="Confirm new password"
+                    />
+                  </div>
+                  <Button onClick={handleUpdateCredentials} className="w-full">
+                    Update Credentials
+                  </Button>
+                </div>
+              </CardContent>
+            </CollapsibleContent>
+          </Card>
+        </Collapsible>
 
         {/* Search and Add */}
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle>Users ({filteredUsers.length})</CardTitle>
-              <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button onClick={resetForm}>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add User
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-                  <DialogHeader>
-                    <DialogTitle>Add New User</DialogTitle>
-                  </DialogHeader>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label>Full Name *</Label>
-                      <Input value={fullName} onChange={(e) => setFullName(e.target.value)} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Email *</Label>
-                      <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Password *</Label>
-                      <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Reference Code *</Label>
-                      <Input value={referenceCode} onChange={(e) => setReferenceCode(e.target.value)} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Username</Label>
-                      <Input value={username} onChange={(e) => setUsername(e.target.value)} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Date of Birth</Label>
-                      <Input type="date" value={dateOfBirth} onChange={(e) => setDateOfBirth(e.target.value)} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Present Address</Label>
-                      <Input value={presentAddress} onChange={(e) => setPresentAddress(e.target.value)} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Permanent Address</Label>
-                      <Input value={permanentAddress} onChange={(e) => setPermanentAddress(e.target.value)} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>City</Label>
-                      <Input value={city} onChange={(e) => setCity(e.target.value)} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Postal Code</Label>
-                      <Input value={postalCode} onChange={(e) => setPostalCode(e.target.value)} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Country</Label>
-                      <Input value={country} onChange={(e) => setCountry(e.target.value)} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Level</Label>
-                      <Input value={level} onChange={(e) => setLevel(e.target.value)} />
-                    </div>
+        <Collapsible open={isUsersOpen} onOpenChange={setIsUsersOpen}>
+          <Card>
+            <CollapsibleTrigger asChild>
+              <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <CardTitle className="flex items-center gap-2">
+                      <Users className="h-5 w-5" />
+                      Users ({filteredUsers.length})
+                    </CardTitle>
                   </div>
-                  <Button onClick={handleAddUser} className="w-full mt-4">Add User</Button>
-                </DialogContent>
-              </Dialog>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="relative mb-4">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search by name, email, or reference code..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9"
-              />
-            </div>
+                  <div className="flex items-center gap-2">
+                    <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+                      <DialogTrigger asChild>
+                        <Button onClick={(e) => { e.stopPropagation(); resetForm(); }} size="sm">
+                          <Plus className="h-4 w-4 mr-2" />
+                          Add User
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                        <DialogHeader>
+                          <DialogTitle>Add New User</DialogTitle>
+                        </DialogHeader>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label>Full Name *</Label>
+                            <Input value={fullName} onChange={(e) => setFullName(e.target.value)} />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Email *</Label>
+                            <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Password *</Label>
+                            <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Reference Code *</Label>
+                            <Input value={referenceCode} onChange={(e) => setReferenceCode(e.target.value)} />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Username</Label>
+                            <Input value={username} onChange={(e) => setUsername(e.target.value)} />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Date of Birth</Label>
+                            <Input type="date" value={dateOfBirth} onChange={(e) => setDateOfBirth(e.target.value)} />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Present Address</Label>
+                            <Input value={presentAddress} onChange={(e) => setPresentAddress(e.target.value)} />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Permanent Address</Label>
+                            <Input value={permanentAddress} onChange={(e) => setPermanentAddress(e.target.value)} />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>City</Label>
+                            <Input value={city} onChange={(e) => setCity(e.target.value)} />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Postal Code</Label>
+                            <Input value={postalCode} onChange={(e) => setPostalCode(e.target.value)} />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Country</Label>
+                            <Input value={country} onChange={(e) => setCountry(e.target.value)} />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Level</Label>
+                            <Input value={level} onChange={(e) => setLevel(e.target.value)} />
+                          </div>
+                        </div>
+                        <Button onClick={handleAddUser} className="w-full mt-4">Add User</Button>
+                      </DialogContent>
+                    </Dialog>
+                    {isUsersOpen ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+                  </div>
+                </div>
+              </CardHeader>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <CardContent>
+                <div className="relative mb-4">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search by name, email, or reference code..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-9"
+                  />
+                </div>
 
-            <div className="border rounded-lg overflow-hidden">
+                <ScrollArea className="h-[400px] border rounded-lg">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -589,9 +616,11 @@ const ControlRoom = () => {
                   ))}
                 </TableBody>
               </Table>
-            </div>
-          </CardContent>
-        </Card>
+                </ScrollArea>
+              </CardContent>
+            </CollapsibleContent>
+          </Card>
+        </Collapsible>
 
         {/* Waitlist & Leaderboard Tabs */}
         <Tabs defaultValue="waitlist" className="w-full">
@@ -626,7 +655,7 @@ const ControlRoom = () => {
                   />
                 </div>
 
-                <div className="border rounded-lg overflow-hidden">
+                <ScrollArea className="h-[400px] border rounded-lg">
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -668,7 +697,7 @@ const ControlRoom = () => {
                       )}
                     </TableBody>
                   </Table>
-                </div>
+                </ScrollArea>
               </CardContent>
             </Card>
           </TabsContent>
@@ -683,7 +712,7 @@ const ControlRoom = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="border rounded-lg overflow-hidden">
+                <ScrollArea className="h-[400px] border rounded-lg">
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -722,7 +751,7 @@ const ControlRoom = () => {
                       )}
                     </TableBody>
                   </Table>
-                </div>
+                </ScrollArea>
               </CardContent>
             </Card>
           </TabsContent>
