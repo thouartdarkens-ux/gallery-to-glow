@@ -6,7 +6,8 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Shield, Plus, Pencil, Trash2, LogOut, Search } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Shield, Plus, Pencil, Trash2, LogOut, Search, Users, Trophy, Mail } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -21,8 +22,10 @@ const userSchema = z.object({
 const ControlRoom = () => {
   const navigate = useNavigate();
   const [users, setUsers] = useState<any[]>([]);
+  const [waitlist, setWaitlist] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [waitlistSearchQuery, setWaitlistSearchQuery] = useState("");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<any>(null);
   
@@ -61,6 +64,7 @@ const ControlRoom = () => {
     }
     
     loadUsers();
+    loadWaitlist();
     loadAdminCredentials();
   }, [navigate]);
 
@@ -98,6 +102,30 @@ const ControlRoom = () => {
       setLoading(false);
     }
   };
+
+  const loadWaitlist = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("waitlist")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      setWaitlist(data || []);
+    } catch (error) {
+      console.error("Error loading waitlist:", error);
+      toast.error("Failed to load waitlist");
+    }
+  };
+
+  // Get leaderboard sorted by total_points
+  const leaderboard = [...users].sort((a, b) => (b.total_points || 0) - (a.total_points || 0));
+
+  // Filter waitlist
+  const filteredWaitlist = waitlist.filter(entry =>
+    entry.email?.toLowerCase().includes(waitlistSearchQuery.toLowerCase()) ||
+    entry.referral_code?.toLowerCase().includes(waitlistSearchQuery.toLowerCase())
+  );
 
   const resetForm = () => {
     setFullName("");
@@ -564,6 +592,141 @@ const ControlRoom = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Waitlist & Leaderboard Tabs */}
+        <Tabs defaultValue="waitlist" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="waitlist" className="flex items-center gap-2">
+              <Mail className="h-4 w-4" />
+              Waitlist ({waitlist.length})
+            </TabsTrigger>
+            <TabsTrigger value="leaderboard" className="flex items-center gap-2">
+              <Trophy className="h-4 w-4" />
+              Leaderboard
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Waitlist Tab */}
+          <TabsContent value="waitlist">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Mail className="h-5 w-5" />
+                  Waitlist Members
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="relative mb-4">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search by email or referral code..."
+                    value={waitlistSearchQuery}
+                    onChange={(e) => setWaitlistSearchQuery(e.target.value)}
+                    className="pl-9"
+                  />
+                </div>
+
+                <div className="border rounded-lg overflow-hidden">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>#</TableHead>
+                        <TableHead>Email</TableHead>
+                        <TableHead>Referral Code Used</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Joined</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredWaitlist.map((entry, index) => (
+                        <TableRow key={entry.id}>
+                          <TableCell className="font-medium">{index + 1}</TableCell>
+                          <TableCell>{entry.email}</TableCell>
+                          <TableCell>{entry.referral_code || "-"}</TableCell>
+                          <TableCell>
+                            <span className={`px-2 py-1 rounded-full text-xs ${
+                              entry.status === 'pending' 
+                                ? 'bg-yellow-100 text-yellow-800' 
+                                : 'bg-green-100 text-green-800'
+                            }`}>
+                              {entry.status || 'pending'}
+                            </span>
+                          </TableCell>
+                          <TableCell>
+                            {entry.created_at 
+                              ? new Date(entry.created_at).toLocaleDateString() 
+                              : "-"}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                      {filteredWaitlist.length === 0 && (
+                        <TableRow>
+                          <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
+                            No waitlist entries found
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Leaderboard Tab */}
+          <TabsContent value="leaderboard">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Trophy className="h-5 w-5 text-yellow-500" />
+                  Complete Leaderboard
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="border rounded-lg overflow-hidden">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-16">Rank</TableHead>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Email</TableHead>
+                        <TableHead>Reference Code</TableHead>
+                        <TableHead>Referrals</TableHead>
+                        <TableHead>Level</TableHead>
+                        <TableHead className="text-right">Total Points</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {leaderboard.map((user, index) => (
+                        <TableRow key={user.id} className={index < 3 ? "bg-muted/30" : ""}>
+                          <TableCell className="font-bold">
+                            {index === 0 && <span className="text-yellow-500">🥇</span>}
+                            {index === 1 && <span className="text-gray-400">🥈</span>}
+                            {index === 2 && <span className="text-amber-600">🥉</span>}
+                            {index > 2 && <span className="text-muted-foreground">{index + 1}</span>}
+                          </TableCell>
+                          <TableCell className="font-medium">{user.full_name || "-"}</TableCell>
+                          <TableCell>{user.email}</TableCell>
+                          <TableCell>{user.reference_code}</TableCell>
+                          <TableCell>{user.referrals_count || 0}</TableCell>
+                          <TableCell>{user.level || "-"}</TableCell>
+                          <TableCell className="text-right font-bold">{user.total_points || 0}</TableCell>
+                        </TableRow>
+                      ))}
+                      {leaderboard.length === 0 && (
+                        <TableRow>
+                          <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
+                            No users found
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
