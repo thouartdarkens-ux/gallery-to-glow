@@ -26,7 +26,7 @@ const Index = () => {
                 <Link to="/login">Volunteer Login</Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="text-lg px-8">
-                <Link to="/support">Become a Volunteer</Link>
+                <a href="https://forms.gle/CSJiZBA4dSaFSjJJA" target="_blank" rel="noopener noreferrer">Become a Volunteer</a>
               </Button>
             </div>
           </div>

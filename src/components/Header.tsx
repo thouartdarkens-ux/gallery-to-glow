@@ -14,12 +14,10 @@ const Header = () => {
               <span className="font-semibold text-xl">Hallway</span>
             </Link>
             <nav className="flex items-center gap-8">
-              
-              <Link to="/support" className="text-foreground hover:text-primary font-medium">Become a Volunteer</Link>
-              <Link to="/vendor" className="text-foreground hover:text-primary font-medium">
+              <a href="https://forms.gle/CSJiZBA4dSaFSjJJA" target="_blank" rel="noopener noreferrer" className="text-foreground hover:text-primary font-medium">Become a Volunteer</a>
+              <a href="https://forms.gle/z1RdD9P7Rc6oNq2C7" target="_blank" rel="noopener noreferrer" className="text-foreground hover:text-primary font-medium">
                 Become A Vendor
-              </Link>
-              
+              </a>
             </nav>
           </div>
         </div>
