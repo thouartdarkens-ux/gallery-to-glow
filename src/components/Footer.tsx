@@ -17,12 +17,12 @@ const Footer = () => {
           <div>
             <h3 className="font-semibold mb-4">Home</h3>
             <nav className="space-y-2">
-              <Link to="/support" className="block text-muted-foreground hover:text-foreground text-sm">
+              <a href="https://forms.gle/CSJiZBA4dSaFSjJJA" target="_blank" rel="noopener noreferrer" className="block text-muted-foreground hover:text-foreground text-sm">
                 Become a Volunteer
-              </Link>
-              <Link to="/vendor" className="block text-muted-foreground hover:text-foreground text-sm">
+              </a>
+              <a href="https://forms.gle/z1RdD9P7Rc6oNq2C7" target="_blank" rel="noopener noreferrer" className="block text-muted-foreground hover:text-foreground text-sm">
                 Become A Vendor
-              </Link>
+              </a>
               <a href="https://hallway.africa" target="_blank" rel="noopener noreferrer" className="block text-muted-foreground hover:text-foreground text-sm">
                 Join The Waitlist
               </a>
