@@ -497,29 +497,24 @@ const ControlRoom = () => {
                 </div>
 
                 <ScrollArea className="h-[400px] border rounded-lg">
+                  <div className="overflow-x-auto min-w-full">
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="sticky left-0 bg-background z-10">Actions</TableHead>
                     <TableHead>Name</TableHead>
                     <TableHead>Email</TableHead>
-                    <TableHead>Reference Code</TableHead>
-                    <TableHead>Level</TableHead>
+                    <TableHead className="hidden md:table-cell">Reference Code</TableHead>
+                    <TableHead className="hidden md:table-cell">Level</TableHead>
                     <TableHead>Points</TableHead>
-                    <TableHead>Verified</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                    <TableHead className="hidden sm:table-cell">Verified</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredUsers.map((user) => (
                     <TableRow key={user.id}>
-                      <TableCell className="font-medium">{user.full_name}</TableCell>
-                      <TableCell>{user.email}</TableCell>
-                      <TableCell>{user.reference_code}</TableCell>
-                      <TableCell>{user.level}</TableCell>
-                      <TableCell>{user.total_points}</TableCell>
-                      <TableCell>{user.verified ? "✓" : "✗"}</TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
+                      <TableCell className="sticky left-0 bg-background z-10">
+                        <div className="flex gap-2">
                           <Dialog>
                             <DialogTrigger asChild>
                               <Button
@@ -534,7 +529,7 @@ const ControlRoom = () => {
                               <DialogHeader>
                                 <DialogTitle>Edit User</DialogTitle>
                               </DialogHeader>
-                              <div className="grid grid-cols-2 gap-4">
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                   <Label>Full Name</Label>
                                   <Input value={fullName} onChange={(e) => setFullName(e.target.value)} />
@@ -612,10 +607,17 @@ const ControlRoom = () => {
                           </Button>
                         </div>
                       </TableCell>
+                      <TableCell className="font-medium">{user.full_name}</TableCell>
+                      <TableCell>{user.email}</TableCell>
+                      <TableCell className="hidden md:table-cell">{user.reference_code}</TableCell>
+                      <TableCell className="hidden md:table-cell">{user.level}</TableCell>
+                      <TableCell>{user.total_points}</TableCell>
+                      <TableCell className="hidden sm:table-cell">{user.verified ? "✓" : "✗"}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
+                  </div>
                 </ScrollArea>
               </CardContent>
             </CollapsibleContent>
