@@ -496,20 +496,21 @@ const ControlRoom = () => {
                   />
                 </div>
 
-                <ScrollArea className="h-[400px] border rounded-lg">
-                  <div className="overflow-x-auto min-w-full">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="sticky left-0 bg-background z-10">Actions</TableHead>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead className="hidden md:table-cell">Reference Code</TableHead>
-                    <TableHead className="hidden md:table-cell">Level</TableHead>
-                    <TableHead>Points</TableHead>
-                    <TableHead className="hidden sm:table-cell">Verified</TableHead>
-                  </TableRow>
-                </TableHeader>
+                <div className="border rounded-lg overflow-hidden">
+                  <ScrollArea className="h-[400px]">
+                    <div className="overflow-x-auto">
+                      <Table className="min-w-[800px]">
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="sticky left-0 bg-background z-10 min-w-[100px]">Actions</TableHead>
+                            <TableHead className="min-w-[120px]">Name</TableHead>
+                            <TableHead className="min-w-[180px]">Email</TableHead>
+                            <TableHead className="min-w-[120px]">Reference Code</TableHead>
+                            <TableHead className="min-w-[80px]">Level</TableHead>
+                            <TableHead className="min-w-[80px]">Points</TableHead>
+                            <TableHead className="min-w-[80px]">Verified</TableHead>
+                          </TableRow>
+                        </TableHeader>
                 <TableBody>
                   {filteredUsers.map((user) => (
                     <TableRow key={user.id}>
@@ -609,16 +610,17 @@ const ControlRoom = () => {
                       </TableCell>
                       <TableCell className="font-medium">{user.full_name}</TableCell>
                       <TableCell>{user.email}</TableCell>
-                      <TableCell className="hidden md:table-cell">{user.reference_code}</TableCell>
-                      <TableCell className="hidden md:table-cell">{user.level}</TableCell>
+                      <TableCell>{user.reference_code}</TableCell>
+                      <TableCell>{user.level}</TableCell>
                       <TableCell>{user.total_points}</TableCell>
-                      <TableCell className="hidden sm:table-cell">{user.verified ? "✓" : "✗"}</TableCell>
+                      <TableCell>{user.verified ? "✓" : "✗"}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
-              </Table>
-                  </div>
-                </ScrollArea>
+                      </Table>
+                    </div>
+                  </ScrollArea>
+                </div>
               </CardContent>
             </CollapsibleContent>
           </Card>
