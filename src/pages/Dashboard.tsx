@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Search, Bell, LogOut, LayoutDashboard, Award, Settings, LifeBuoy, TrendingUp, TrendingDown, CheckCircle2 } from "lucide-react";
+import { Search, Bell, LogOut, LayoutDashboard, Award, Settings, LifeBuoy, TrendingUp, TrendingDown, CheckCircle2, Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -20,6 +20,24 @@ const Dashboard = () => {
   const [leaderboard, setLeaderboard] = useState<any[]>([]);
   const [waitlistMembers, setWaitlistMembers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [copied, setCopied] = useState(false);
+
+  const getReferralLink = (referenceCode: string) => {
+    return `https://hallway.africa/?referenc=${referenceCode}`;
+  };
+
+  const copyReferralLink = async () => {
+    if (!currentUser?.reference_code) return;
+    
+    const link = getReferralLink(currentUser.reference_code);
+    await navigator.clipboard.writeText(link);
+    setCopied(true);
+    toast({
+      title: "Link copied!",
+      description: "Your referral link has been copied to clipboard.",
+    });
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -300,6 +318,32 @@ const Dashboard = () => {
                     </div>
 
                     <Separator />
+
+                    {/* Referral Link Section */}
+                    <div className="pt-4">
+                      <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">Your Referral Link</p>
+                      <div className="flex items-center gap-2">
+                        <Input 
+                          readOnly 
+                          value={getReferralLink(currentUser.reference_code)} 
+                          className="text-sm bg-muted/50"
+                        />
+                        <Button 
+                          variant="outline" 
+                          size="icon"
+                          onClick={copyReferralLink}
+                          className="flex-shrink-0"
+                        >
+                          {copied ? (
+                            <Check className="h-4 w-4 text-green-500" />
+                          ) : (
+                            <Copy className="h-4 w-4" />
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+
+                    <Separator className="mt-4" />
 
                     {/* Level & Rank Row */}
                     <div className="grid grid-cols-2 gap-6 pt-4">
