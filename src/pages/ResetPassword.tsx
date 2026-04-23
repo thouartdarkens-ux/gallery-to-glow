@@ -1,88 +1,76 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Check } from "lucide-react";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import { GraduationCap, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
-const ResetPassword = () => {
+export default function ResetPassword() {
+  const navigate = useNavigate();
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  
-  const requirements = [
-    { text: "At least 8 characters", met: password.length >= 8 },
-    { text: "At least one uppercase letter (A–Z)", met: /[A-Z]/.test(password) },
-    { text: "At least one number (0–9)", met: /\d/.test(password) },
-    { text: "At least one special character (e.g. ! @*)", met: /[!@#$%^&*(),.?":{}|<>]/.test(password) },
-  ];
+  const [submitting, setSubmitting] = useState(false);
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    // Check for recovery token in URL hash
+    const hash = window.location.hash;
+    if (hash.includes("type=recovery")) {
+      setReady(true);
+    } else {
+      // Also listen for PASSWORD_RECOVERY event
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+        if (event === "PASSWORD_RECOVERY") {
+          setReady(true);
+        }
+      });
+      return () => subscription.unsubscribe();
+    }
+  }, []);
+
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+    const { error } = await supabase.auth.updateUser({ password });
+    setSubmitting(false);
+    if (error) {
+      toast.error(error.message);
+    } else {
+      toast.success("Password updated successfully!");
+      navigate("/");
+    }
+  };
+
+  if (!ready) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <p className="text-muted-foreground">Verifying reset link...</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
-      <Header />
-      
-      <main className="flex-1 flex items-center justify-center py-12 px-4 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,#000_60%,transparent_100%)]"></div>
-        
-        <div className="w-full max-w-md relative z-10">
-          <div className="bg-card p-8 rounded-lg shadow-xl border">
-            <div className="space-y-6">
-              <div className="text-center space-y-2">
-                <h1 className="text-2xl font-bold text-foreground">
-                  🔒 Set a New Password
-                </h1>
-                <p className="text-sm text-muted-foreground">
-                  Enter a strong new password to secure your account and get back to using Hallway.
-                </p>
-              </div>
-              
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="password">Password</Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">Confirm Password</Label>
-                  <Input
-                    id="confirmPassword"
-                    type="password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <p className="text-sm font-medium">Your Password Must Include</p>
-                  <div className="space-y-2">
-                    {requirements.map((req, index) => (
-                      <div key={index} className="flex items-center gap-2 text-sm">
-                        <Check className={`h-4 w-4 ${req.met ? 'text-success' : 'text-muted-foreground'}`} />
-                        <span className={req.met ? 'text-foreground' : 'text-muted-foreground'}>
-                          {req.text}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                
-                <Button className="w-full" size="lg">
-                  Secure My Account
-                </Button>
-              </div>
-            </div>
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <div className="w-full max-w-md space-y-8">
+        <div className="text-center">
+          <div className="mx-auto w-14 h-14 rounded-2xl bg-primary flex items-center justify-center mb-4">
+            <GraduationCap className="w-8 h-8 text-primary-foreground" />
           </div>
+          <h1 className="text-2xl font-heading font-bold text-foreground">Set new password</h1>
         </div>
-      </main>
-      
-      <Footer />
+
+        <form onSubmit={handleUpdate} className="bg-card rounded-xl border border-border p-6 shadow-sm space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="password">New Password</Label>
+            <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" minLength={6} required />
+          </div>
+          <Button type="submit" className="w-full" disabled={submitting}>
+            {submitting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+            Update Password
+          </Button>
+        </form>
+      </div>
     </div>
   );
-};
-
-export default ResetPassword;
+}

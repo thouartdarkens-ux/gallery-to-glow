@@ -1,169 +1,241 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { useStudentAuth } from "@/contexts/StudentAuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { ArrowRight, Eye, EyeOff } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import volunteersImage from "@/assets/volunteers.jpeg";
-const Login = () => {
-  const [referenceCode, setReferenceCode] = useState("");
-  const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const {
-    toast
-  } = useToast();
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { GraduationCap, Loader2, KeyRound } from "lucide-react";
+import { toast } from "sonner";
+
+type LoginRole = "staff" | "student" | "parent";
+
+export default function Login() {
+  const { user, loading } = useAuth();
+  const { studentSession } = useStudentAuth();
   const navigate = useNavigate();
+  const [role, setRole] = useState<LoginRole>("staff");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [studentId, setStudentId] = useState("");
+  const [pin, setPin] = useState("");
+  const [phone, setPhone] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  if (loading) return null;
+  if (user) return <Navigate to="/" replace />;
+  if (studentSession) return <Navigate to="/student-portal" replace />;
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    try {
-      const response = await fetch('https://ttxsgqrnhhsuuhkwzpak.supabase.co/functions/v1/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          referenceCode,
-          password
-        })
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        toast({
-          title: "Login failed",
-          description: data.error || "Invalid credentials",
-          variant: "destructive"
-        });
-        setIsLoading(false);
+    if (!role) {
+      toast.error("Please select your role");
+      return;
+    }
+
+    if (role === "parent") {
+      navigate(`/parent-portal?phone=${encodeURIComponent(phone)}`);
+      return;
+    }
+
+    if (role === "student") {
+      if (!studentId.trim() || !pin.trim()) {
+        toast.error("Please enter both Student ID and PIN");
         return;
       }
+      setSubmitting(true);
+      try {
+        const { data, error } = await supabase.rpc("verify_student_pin" as any, {
+          _student_id: studentId.trim(),
+          _pin: pin.trim(),
+        });
+        if (error) throw error;
+        const result = data as any;
+        if (!result.success) {
+          toast.error(result.error || "Invalid credentials");
+          return;
+        }
+        // Store student session and redirect
+        const session = {
+          studentId: studentId.trim(),
+          studentUuid: result.student_id,
+          studentName: result.student_name,
+          mustChangePin: result.must_change,
+        };
+        sessionStorage.setItem("student_session", JSON.stringify(session));
+        // Force page reload to pick up session
+        window.location.href = "/student-portal";
+      } catch (err: any) {
+        toast.error(err.message || "Login failed");
+      } finally {
+        setSubmitting(false);
+      }
+      return;
+    }
 
-      // Store user data in localStorage
-      localStorage.setItem('currentUser', JSON.stringify(data.user));
-      toast({
-        title: "Welcome back!",
-        description: "You have successfully logged in."
-      });
-      navigate("/dashboard");
-    } catch (error) {
-      console.error('Login error:', error);
-      toast({
-        title: "Error",
-        description: "An unexpected error occurred. Please try again.",
-        variant: "destructive"
-      });
-      setIsLoading(false);
+    // Staff login via Supabase Auth
+    setSubmitting(true);
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    setSubmitting(false);
+    if (error) {
+      toast.error(error.message);
     }
   };
-  return <div className="min-h-screen flex flex-col bg-background">
-      <Header />
-      
-      <main className="flex-1 flex items-center justify-center py-12 px-4 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,#000_60%,transparent_100%)]"></div>
-        
-        <div className="w-full max-w-5xl grid md:grid-cols-2 gap-12 items-center relative z-10">
-          <div className="space-y-6">
-            
-            
-            <div className="space-y-2 text-center md:text-left">
-              <h1 className="text-3xl font-bold text-foreground">
-                Welcome to the Volunteer Portal – For Verified Volunteers Only.
-              </h1>
-              <p className="text-muted-foreground">
-                Enter your reference code to log in and track your impact.
-              </p>
-            </div>
-            
-            <div className="hidden md:block">
-              <img src={volunteersImage} alt="Hallway Volunteers" className="rounded-lg shadow-xl w-full max-w-sm" />
-            </div>
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <div className="w-full max-w-md space-y-6">
+        {/* Brand */}
+        <div className="text-center">
+          <div className="mx-auto w-14 h-14 rounded-2xl bg-primary flex items-center justify-center mb-4">
+            <GraduationCap className="w-8 h-8 text-primary-foreground" />
           </div>
-          
-          <div className="bg-card p-8 rounded-lg shadow-xl border">
-            <form onSubmit={handleLogin} className="space-y-6">
-              <div className="space-y-2">
-                <h2 className="text-2xl font-bold">Login</h2>
-                <p className="text-sm text-muted-foreground">
-                  Enter your credentials to access your account
-                </p>
-              </div>
-              
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="referenceCode">Volunteer Reference Code</Label>
-                  <Input id="referenceCode" placeholder="Enter your reference code" value={referenceCode} onChange={e => setReferenceCode(e.target.value)} />
-                </div>
-                
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="password">Password</Label>
-                    <Link to="/forgot-password" className="text-sm text-primary hover:underline">
-                      Forgot password?
-                    </Link>
-                  </div>
-                  <div className="relative">
-                    <Input 
-                      id="password" 
-                      type={showPassword ? "text" : "password"} 
-                      placeholder="Enter your password" 
-                      value={password} 
-                      onChange={e => setPassword(e.target.value)} 
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? (
-                        <EyeOff className="h-4 w-4 text-muted-foreground" />
-                      ) : (
-                        <Eye className="h-4 w-4 text-muted-foreground" />
-                      )}
-                    </Button>
-                  </div>
-                </div>
-                
-                <div className="flex items-center space-x-2">
-                  <Checkbox id="remember" checked={rememberMe} onCheckedChange={checked => setRememberMe(checked as boolean)} />
-                  <label htmlFor="remember" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                    Remember me
-                  </label>
-                </div>
-                
-                <Button className="w-full" size="lg" type="submit" disabled={isLoading}>
-                  {isLoading ? "Signing in..." : "Sign in"}
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-                
-                <p className="text-center text-sm text-muted-foreground">
-                  Together, we build something greater ✨
-                </p>
-                
-                <p className="text-center text-xs text-muted-foreground pt-4">
-                  By signing in, you agree to our{" "}
-                  <Link to="/terms" className="underline hover:text-foreground">
-                    Terms of Service
-                  </Link>{" "}
-                   and{" "}
-                   <Link to="/privacy" className="underline hover:text-foreground">
-                    Privacy Policy
-                  </Link>
-                </p>
-              </div>
-            </form>
-          </div>
+          <h1 className="text-2xl font-heading font-bold text-foreground">
+            SchoolConnect ERP
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            Sign in to your school portal
+          </p>
         </div>
-      </main>
-      
-      <Footer />
-    </div>;
-};
-export default Login;
+
+        {/* Login form */}
+        <form
+          onSubmit={handleLogin}
+          className="bg-card rounded-xl border border-border p-6 shadow-sm space-y-5"
+        >
+          {/* Role dropdown */}
+          <div className="space-y-2">
+            <Label>Login as</Label>
+            <Select
+              value={role}
+              onValueChange={(v) => setRole(v as LoginRole)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select your role" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="staff">Staff</SelectItem>
+                <SelectItem value="student">Student</SelectItem>
+                <SelectItem value="parent">Parent / Guardian</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Staff fields */}
+          {role === "staff" && (
+            <>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="staff@school.edu.gh"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <Label htmlFor="password">Password</Label>
+                  <Link
+                    to="/forgot-password"
+                    className="text-xs text-primary hover:underline"
+                  >
+                    Forgot password?
+                  </Link>
+                </div>
+                <Input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  required
+                />
+              </div>
+            </>
+          )}
+
+          {/* Student fields - ID + PIN */}
+          {role === "student" && (
+            <>
+              <div className="space-y-2">
+                <Label htmlFor="studentId">Student ID</Label>
+                <Input
+                  id="studentId"
+                  value={studentId}
+                  onChange={(e) => setStudentId(e.target.value)}
+                  placeholder="e.g. STU-2025-001"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="pin">PIN</Label>
+                <div className="relative">
+                  <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    id="pin"
+                    type="password"
+                    value={pin}
+                    onChange={(e) => setPin(e.target.value)}
+                    placeholder="Enter your PIN"
+                    className="pl-9"
+                    maxLength={6}
+                    required
+                  />
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* Parent fields */}
+          {role === "parent" && (
+            <div className="space-y-2">
+              <Label htmlFor="phone">Registered Phone Number</Label>
+              <Input
+                id="phone"
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="0241234567"
+                required
+              />
+            </div>
+          )}
+
+          {role && (
+            <Button type="submit" className="w-full" disabled={submitting}>
+              {submitting && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
+              {role === "staff"
+                ? "Sign In"
+                : role === "student"
+                ? "Login"
+                : "Look Up"}
+            </Button>
+          )}
+        </form>
+
+        {role === "staff" && (
+          <p className="text-center text-sm text-muted-foreground">
+            Don't have an account?{" "}
+            <Link
+              to="/signup"
+              className="text-primary hover:underline font-medium"
+            >
+              Sign up
+            </Link>
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}

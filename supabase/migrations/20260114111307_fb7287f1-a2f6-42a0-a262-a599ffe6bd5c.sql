@@ -1,1 +1,0 @@
-INSERT INTO waitlist (email, referral_code) VALUES ('testuser@example.com', 'magma');
