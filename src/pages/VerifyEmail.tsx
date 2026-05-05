@@ -1,13 +1,11 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Mail } from "lucide-react";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
-const ForgotPassword = () => {
-  const [email, setEmail] = useState("");
+const VerifyEmail = () => {
+  const [otp, setOtp] = useState("");
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -24,35 +22,29 @@ const ForgotPassword = () => {
               </div>
               
               <div className="text-center space-y-2">
-                <h1 className="text-3xl font-bold text-foreground">
-                  🔐 Forgot Your Password?
+                <h1 className="text-2xl font-bold text-foreground">
+                  Check Your Inbox to Verify Your Email
                 </h1>
-                <p className="text-muted-foreground">
-                  No worries — it happens!
-                </p>
                 <p className="text-sm text-muted-foreground">
-                  Enter your email address below and we'll send you a secure 5 digit code to reset your password.
+                  We've sent a verification code to your email. Please enter the code to confirm your address and reset your Hallway Volunteer password.
                 </p>
               </div>
               
               <div className="w-full space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email" className="sr-only">Your email address</Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="Your email address"
-                      className="pl-10"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                    />
-                  </div>
+                <div className="flex justify-center">
+                  <InputOTP maxLength={5} value={otp} onChange={setOtp}>
+                    <InputOTPGroup>
+                      <InputOTPSlot index={0} />
+                      <InputOTPSlot index={1} />
+                      <InputOTPSlot index={2} />
+                      <InputOTPSlot index={3} />
+                      <InputOTPSlot index={4} />
+                    </InputOTPGroup>
+                  </InputOTP>
                 </div>
                 
                 <Button className="w-full" size="lg">
-                  Send Code
+                  Verify Your Email
                 </Button>
               </div>
             </div>
@@ -65,4 +57,4 @@ const ForgotPassword = () => {
   );
 };
 
-export default ForgotPassword;
+export default VerifyEmail;
