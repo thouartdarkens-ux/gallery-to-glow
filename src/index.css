@@ -1,0 +1,86 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 0 0% 98%;
+    --foreground: 28 25% 25%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 28 25% 25%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 28 25% 25%;
+
+    --primary: 28 45% 27%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 28 10% 92%;
+    --secondary-foreground: 28 45% 27%;
+
+    --muted: 28 5% 95%;
+    --muted-foreground: 28 10% 50%;
+
+    --accent: 38 65% 55%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 142 70% 45%;
+    --success-foreground: 0 0% 100%;
+
+    --border: 28 10% 90%;
+    --input: 28 10% 90%;
+    --ring: 28 45% 27%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 28 25% 25%;
+    --sidebar-primary: 28 45% 27%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 28 10% 96%;
+    --sidebar-accent-foreground: 28 45% 27%;
+    --sidebar-border: 28 10% 92%;
+    --sidebar-ring: 28 45% 27%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  /* Responsive typography for mobile */
+  @media (max-width: 768px) {
+    html {
+      font-size: 14px;
+    }
+    
+    h1 {
+      @apply text-2xl;
+    }
+    
+    h2 {
+      @apply text-xl;
+    }
+    
+    h3 {
+      @apply text-lg;
+    }
+    
+    h4, h5, h6 {
+      @apply text-base;
+    }
+  }
+}

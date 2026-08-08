@@ -1,27 +1,51 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Index from "./pages/Index";
+import LandingPage from "./pages/LandingPage";
+import Login from "./pages/Login";
+import ForgotPassword from "./pages/ForgotPassword";
+import VerifyEmail from "./pages/VerifyEmail";
+import ResetPassword from "./pages/ResetPassword";
+import ResetSuccess from "./pages/ResetSuccess";
+import Dashboard from "./pages/Dashboard";
+import Settings from "./pages/Settings";
+import ControlRoomLogin from "./pages/ControlRoomLogin";
+import ControlRoom from "./pages/ControlRoom";
+import NotFound from "./pages/NotFound";
 
-import { LoginPage } from "@/routes/index";
-import { DashboardLayout } from "@/routes/dashboard";
-import { OverviewPage } from "@/routes/dashboard.index";
-import { PlacementsPage } from "@/routes/dashboard.placements";
-import { RecordsPage } from "@/routes/dashboard.records";
-import { AssignmentsPage } from "@/routes/dashboard.assignments";
-import { DocumentsPage } from "@/routes/dashboard.documents";
-import { InstitutionPage } from "@/routes/dashboard.institution";
+// Create QueryClient outside of component to avoid re-initialization
+const queryClient = new QueryClient();
 
-export function App() {
+const App = () => {
+
   return (
-    <Routes>
-      <Route path="/" element={<LoginPage />} />
-      <Route path="/dashboard" element={<DashboardLayout />}>
-        <Route index element={<OverviewPage />} />
-        <Route path="placements" element={<PlacementsPage />} />
-        <Route path="records" element={<RecordsPage />} />
-        <Route path="assignments" element={<AssignmentsPage />} />
-        <Route path="documents" element={<DocumentsPage />} />
-        <Route path="institution" element={<InstitutionPage />} />
-      </Route>
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/landingpage" element={<LandingPage />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/verify-email" element={<VerifyEmail />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/reset-success" element={<ResetSuccess />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/controlroomlogin" element={<ControlRoomLogin />} />
+            <Route path="/controlroom" element={<ControlRoom />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
   );
-}
+};
+
+export default App;

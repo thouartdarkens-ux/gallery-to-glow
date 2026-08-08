@@ -10,726 +10,157 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.15"
+    PostgrestVersion: "13.0.5"
   }
   public: {
     Tables: {
-      admission_tokens: {
+      admin_credentials: {
         Row: {
-          candidate_name: string | null
-          completion_year: string
           created_at: string
-          date_of_birth: string | null
           id: string
-          index_no: string
-          school_id: number
-          status: string
-          token: string
-          used_at: string | null
+          password: string
+          updated_at: string
+          username: string
         }
         Insert: {
-          candidate_name?: string | null
-          completion_year: string
           created_at?: string
-          date_of_birth?: string | null
           id?: string
-          index_no: string
-          school_id: number
-          status?: string
-          token: string
-          used_at?: string | null
+          password: string
+          updated_at?: string
+          username: string
         }
         Update: {
-          candidate_name?: string | null
-          completion_year?: string
           created_at?: string
-          date_of_birth?: string | null
           id?: string
-          index_no?: string
-          school_id?: number
-          status?: string
-          token?: string
-          used_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "admission_tokens_school_id_fkey"
-            columns: ["school_id"]
-            isOneToOne: false
-            referencedRelation: "schools"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      classes: {
-        Row: {
-          created_at: string
-          form_level: number
-          form_master_name: string | null
-          id: number
-          name: string
-          programme: string | null
-          school_id: number
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          form_level?: number
-          form_master_name?: string | null
-          id?: never
-          name: string
-          programme?: string | null
-          school_id: number
+          password?: string
           updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          form_level?: number
-          form_master_name?: string | null
-          id?: never
-          name?: string
-          programme?: string | null
-          school_id?: number
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "classes_school_id_fkey"
-            columns: ["school_id"]
-            isOneToOne: false
-            referencedRelation: "schools"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      guardians: {
-        Row: {
-          address: string | null
-          alt_phone: string | null
-          created_at: string
-          email: string | null
-          full_name: string
-          id: number
-          is_primary: boolean
-          phone: string
-          relationship: string
-          student_id: number
-          updated_at: string
-        }
-        Insert: {
-          address?: string | null
-          alt_phone?: string | null
-          created_at?: string
-          email?: string | null
-          full_name: string
-          id?: never
-          is_primary?: boolean
-          phone: string
-          relationship?: string
-          student_id: number
-          updated_at?: string
-        }
-        Update: {
-          address?: string | null
-          alt_phone?: string | null
-          created_at?: string
-          email?: string | null
-          full_name?: string
-          id?: never
-          is_primary?: boolean
-          phone?: string
-          relationship?: string
-          student_id?: number
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "guardians_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "students"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      houses: {
-        Row: {
-          capacity: number | null
-          created_at: string
-          gender: string
-          housemaster_name: string | null
-          id: number
-          name: string
-          school_id: number
-          updated_at: string
-        }
-        Insert: {
-          capacity?: number | null
-          created_at?: string
-          gender?: string
-          housemaster_name?: string | null
-          id?: never
-          name: string
-          school_id: number
-          updated_at?: string
-        }
-        Update: {
-          capacity?: number | null
-          created_at?: string
-          gender?: string
-          housemaster_name?: string | null
-          id?: never
-          name?: string
-          school_id?: number
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "houses_school_id_fkey"
-            columns: ["school_id"]
-            isOneToOne: false
-            referencedRelation: "schools"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      payment_transactions: {
-        Row: {
-          amount: number
-          checkout_id: string | null
-          checkout_url: string | null
-          client_reference: string
-          completion_year: string
-          created_at: string
-          customer_phone: string | null
-          id: string
-          index_no: string
-          provider_response: Json | null
-          school_id: number
-          status: string
-          token: string | null
-          updated_at: string
-        }
-        Insert: {
-          amount?: number
-          checkout_id?: string | null
-          checkout_url?: string | null
-          client_reference: string
-          completion_year: string
-          created_at?: string
-          customer_phone?: string | null
-          id?: string
-          index_no: string
-          provider_response?: Json | null
-          school_id: number
-          status?: string
-          token?: string | null
-          updated_at?: string
-        }
-        Update: {
-          amount?: number
-          checkout_id?: string | null
-          checkout_url?: string | null
-          client_reference?: string
-          completion_year?: string
-          created_at?: string
-          customer_phone?: string | null
-          id?: string
-          index_no?: string
-          provider_response?: Json | null
-          school_id?: number
-          status?: string
-          token?: string | null
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "payment_transactions_school_id_fkey"
-            columns: ["school_id"]
-            isOneToOne: false
-            referencedRelation: "schools"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      placements: {
-        Row: {
-          aggregate: number | null
-          candidate_name: string
-          completion_year: string
-          created_at: string
-          date_of_birth: string | null
-          enrolment_code: string | null
-          gender: string
-          id: number
-          index_no: string
-          jhs_attended: string | null
-          phone: string | null
-          programme: string
-          programme_code: string | null
-          residency: string
-          school_id: number
-          updated_at: string
-        }
-        Insert: {
-          aggregate?: number | null
-          candidate_name: string
-          completion_year: string
-          created_at?: string
-          date_of_birth?: string | null
-          enrolment_code?: string | null
-          gender?: string
-          id?: never
-          index_no: string
-          jhs_attended?: string | null
-          phone?: string | null
-          programme: string
-          programme_code?: string | null
-          residency?: string
-          school_id: number
-          updated_at?: string
-        }
-        Update: {
-          aggregate?: number | null
-          candidate_name?: string
-          completion_year?: string
-          created_at?: string
-          date_of_birth?: string | null
-          enrolment_code?: string | null
-          gender?: string
-          id?: never
-          index_no?: string
-          jhs_attended?: string | null
-          phone?: string | null
-          programme?: string
-          programme_code?: string | null
-          residency?: string
-          school_id?: number
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "placements_school_id_fkey"
-            columns: ["school_id"]
-            isOneToOne: false
-            referencedRelation: "schools"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      regions: {
-        Row: {
-          capital: string
-          code: string
-          created_at: string
-          id: number
-          name: string
-          updated_at: string
-        }
-        Insert: {
-          capital: string
-          code: string
-          created_at?: string
-          id?: never
-          name: string
-          updated_at?: string
-        }
-        Update: {
-          capital?: string
-          code?: string
-          created_at?: string
-          id?: never
-          name?: string
-          updated_at?: string
+          username?: string
         }
         Relationships: []
       }
-      schools: {
+      users: {
         Row: {
-          admission_letter_path: string | null
-          admission_letter_template: string | null
-          category: string
-          code: string
-          contact_email: string | null
-          contact_phone: string | null
-          created_at: string
-          credentials: string | null
-          current_cycle: string | null
-          cycle_status: string
-          established_year: string | null
-          id: number
-          motto: string | null
-          name: string
-          personal_records_form_path: string | null
-          postal_address: string | null
-          principal_name: string | null
-          programme_subjects_path: string | null
-          prospectus_path: string | null
-          region_id: number
-          reopening_date: string | null
-          school_type: string
-          town: string
-          undertaking_form_path: string | null
-          updated_at: string
-          website: string | null
-        }
-        Insert: {
-          admission_letter_path?: string | null
-          admission_letter_template?: string | null
-          category?: string
-          code: string
-          contact_email?: string | null
-          contact_phone?: string | null
-          created_at?: string
-          credentials?: string | null
-          current_cycle?: string | null
-          cycle_status?: string
-          established_year?: string | null
-          id?: never
-          motto?: string | null
-          name: string
-          personal_records_form_path?: string | null
-          postal_address?: string | null
-          principal_name?: string | null
-          programme_subjects_path?: string | null
-          prospectus_path?: string | null
-          region_id: number
-          reopening_date?: string | null
-          school_type?: string
-          town: string
-          undertaking_form_path?: string | null
-          updated_at?: string
-          website?: string | null
-        }
-        Update: {
-          admission_letter_path?: string | null
-          admission_letter_template?: string | null
-          category?: string
-          code?: string
-          contact_email?: string | null
-          contact_phone?: string | null
-          created_at?: string
-          credentials?: string | null
-          current_cycle?: string | null
-          cycle_status?: string
-          established_year?: string | null
-          id?: never
-          motto?: string | null
-          name?: string
-          personal_records_form_path?: string | null
-          postal_address?: string | null
-          principal_name?: string | null
-          programme_subjects_path?: string | null
-          prospectus_path?: string | null
-          region_id?: number
-          reopening_date?: string | null
-          school_type?: string
-          town?: string
-          undertaking_form_path?: string | null
-          updated_at?: string
-          website?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "schools_region_id_fkey"
-            columns: ["region_id"]
-            isOneToOne: false
-            referencedRelation: "regions"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      student_records: {
-        Row: {
-          admission_letter_path: string | null
-          aggregate: number | null
-          completion_year: string
-          created_at: string
+          accumulated_points: number
+          avatar_url: string | null
+          city: string | null
+          country: string | null
+          created_at: string | null
+          currency: string | null
           date_of_birth: string | null
-          denomination: string | null
-          district: string | null
-          enrolment_code: string | null
-          enrolment_form_path: string | null
-          father_contact: string | null
-          father_name: string | null
-          father_occupation: string | null
-          gender: string | null
-          ghana_card_number: string | null
-          guardian_contact: string | null
-          guardian_digital_address: string | null
-          guardian_email: string | null
-          guardian_name: string | null
+          deducted_points: number
+          email: string
+          full_name: string | null
           id: string
-          index_no: string
-          interests: string | null
-          jhs_attended: string | null
-          jhs_type: string | null
-          medical_notes: string | null
-          mother_contact: string | null
-          mother_name: string | null
-          mother_occupation: string | null
-          nationality: string | null
-          nhis_number: string | null
-          other_names: string | null
-          passport_photo_path: string | null
+          level: string | null
+          notification_offers: boolean | null
+          notification_promotional: boolean | null
+          notification_recommendations: boolean | null
+          password: string
+          pending_points: number
           permanent_address: string | null
-          place_of_birth: string | null
-          programme: string | null
-          raw_score: number | null
-          region: string | null
-          religion: string | null
-          residency: string | null
-          school_id: number
-          status: string
-          surname: string | null
-          town: string | null
-          updated_at: string
+          postal_code: string | null
+          present_address: string | null
+          reference_code: string
+          referrals_count: number
+          timezone: string | null
+          total_points: number
+          two_factor_enabled: boolean | null
+          updated_at: string | null
+          username: string | null
+          verified: boolean
         }
         Insert: {
-          admission_letter_path?: string | null
-          aggregate?: number | null
-          completion_year: string
-          created_at?: string
+          accumulated_points?: number
+          avatar_url?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string | null
+          currency?: string | null
           date_of_birth?: string | null
-          denomination?: string | null
-          district?: string | null
-          enrolment_code?: string | null
-          enrolment_form_path?: string | null
-          father_contact?: string | null
-          father_name?: string | null
-          father_occupation?: string | null
-          gender?: string | null
-          ghana_card_number?: string | null
-          guardian_contact?: string | null
-          guardian_digital_address?: string | null
-          guardian_email?: string | null
-          guardian_name?: string | null
+          deducted_points?: number
+          email: string
+          full_name?: string | null
           id?: string
-          index_no: string
-          interests?: string | null
-          jhs_attended?: string | null
-          jhs_type?: string | null
-          medical_notes?: string | null
-          mother_contact?: string | null
-          mother_name?: string | null
-          mother_occupation?: string | null
-          nationality?: string | null
-          nhis_number?: string | null
-          other_names?: string | null
-          passport_photo_path?: string | null
+          level?: string | null
+          notification_offers?: boolean | null
+          notification_promotional?: boolean | null
+          notification_recommendations?: boolean | null
+          password: string
+          pending_points?: number
           permanent_address?: string | null
-          place_of_birth?: string | null
-          programme?: string | null
-          raw_score?: number | null
-          region?: string | null
-          religion?: string | null
-          residency?: string | null
-          school_id: number
-          status?: string
-          surname?: string | null
-          town?: string | null
-          updated_at?: string
+          postal_code?: string | null
+          present_address?: string | null
+          reference_code: string
+          referrals_count?: number
+          timezone?: string | null
+          total_points?: number
+          two_factor_enabled?: boolean | null
+          updated_at?: string | null
+          username?: string | null
+          verified?: boolean
         }
         Update: {
-          admission_letter_path?: string | null
-          aggregate?: number | null
-          completion_year?: string
-          created_at?: string
+          accumulated_points?: number
+          avatar_url?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string | null
+          currency?: string | null
           date_of_birth?: string | null
-          denomination?: string | null
-          district?: string | null
-          enrolment_code?: string | null
-          enrolment_form_path?: string | null
-          father_contact?: string | null
-          father_name?: string | null
-          father_occupation?: string | null
-          gender?: string | null
-          ghana_card_number?: string | null
-          guardian_contact?: string | null
-          guardian_digital_address?: string | null
-          guardian_email?: string | null
-          guardian_name?: string | null
+          deducted_points?: number
+          email?: string
+          full_name?: string | null
           id?: string
-          index_no?: string
-          interests?: string | null
-          jhs_attended?: string | null
-          jhs_type?: string | null
-          medical_notes?: string | null
-          mother_contact?: string | null
-          mother_name?: string | null
-          mother_occupation?: string | null
-          nationality?: string | null
-          nhis_number?: string | null
-          other_names?: string | null
-          passport_photo_path?: string | null
+          level?: string | null
+          notification_offers?: boolean | null
+          notification_promotional?: boolean | null
+          notification_recommendations?: boolean | null
+          password?: string
+          pending_points?: number
           permanent_address?: string | null
-          place_of_birth?: string | null
-          programme?: string | null
-          raw_score?: number | null
-          region?: string | null
-          religion?: string | null
-          residency?: string | null
-          school_id?: number
-          status?: string
-          surname?: string | null
-          town?: string | null
-          updated_at?: string
+          postal_code?: string | null
+          present_address?: string | null
+          reference_code?: string
+          referrals_count?: number
+          timezone?: string | null
+          total_points?: number
+          two_factor_enabled?: boolean | null
+          updated_at?: string | null
+          username?: string | null
+          verified?: boolean
         }
-        Relationships: [
-          {
-            foreignKeyName: "student_records_school_id_fkey"
-            columns: ["school_id"]
-            isOneToOne: false
-            referencedRelation: "schools"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
-      students: {
+      waitlist: {
         Row: {
-          address: string | null
-          aggregate: number | null
-          alt_phone: string | null
-          class_assigned_at: string | null
-          class_id: number | null
-          completion_year: string | null
-          created_at: string
-          date_of_birth: string | null
-          email: string | null
-          enrolment_code: string | null
-          full_name: string
-          gender: string
-          house_assigned_at: string | null
-          house_id: number | null
-          id: number
-          index_no: string
-          jhs_attended: string | null
-          phone: string | null
-          pin: string | null
-          programme: string | null
-          residency: string
-          school_id: number
-          status: string
-          updated_at: string
+          created_at: string | null
+          email: string
+          id: string
+          referral_code: string | null
+          status: string | null
         }
         Insert: {
-          address?: string | null
-          aggregate?: number | null
-          alt_phone?: string | null
-          class_assigned_at?: string | null
-          class_id?: number | null
-          completion_year?: string | null
-          created_at?: string
-          date_of_birth?: string | null
-          email?: string | null
-          enrolment_code?: string | null
-          full_name: string
-          gender?: string
-          house_assigned_at?: string | null
-          house_id?: number | null
-          id?: never
-          index_no: string
-          jhs_attended?: string | null
-          phone?: string | null
-          pin?: string | null
-          programme?: string | null
-          residency?: string
-          school_id: number
-          status?: string
-          updated_at?: string
+          created_at?: string | null
+          email: string
+          id?: string
+          referral_code?: string | null
+          status?: string | null
         }
         Update: {
-          address?: string | null
-          aggregate?: number | null
-          alt_phone?: string | null
-          class_assigned_at?: string | null
-          class_id?: number | null
-          completion_year?: string | null
-          created_at?: string
-          date_of_birth?: string | null
-          email?: string | null
-          enrolment_code?: string | null
-          full_name?: string
-          gender?: string
-          house_assigned_at?: string | null
-          house_id?: number | null
-          id?: never
-          index_no?: string
-          jhs_attended?: string | null
-          phone?: string | null
-          pin?: string | null
-          programme?: string | null
-          residency?: string
-          school_id?: number
-          status?: string
-          updated_at?: string
+          created_at?: string | null
+          email?: string
+          id?: string
+          referral_code?: string | null
+          status?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "students_class_id_fkey"
-            columns: ["class_id"]
-            isOneToOne: false
-            referencedRelation: "classes"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "students_house_id_fkey"
-            columns: ["house_id"]
-            isOneToOne: false
-            referencedRelation: "houses"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "students_school_id_fkey"
-            columns: ["school_id"]
-            isOneToOne: false
-            referencedRelation: "schools"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      clear_cycle_data: { Args: { p_school_id: number }; Returns: Json }
-      generate_admission_token:
-        | {
-            Args: {
-              p_completion_year: string
-              p_date_of_birth?: string
-              p_index_no: string
-              p_school_id: number
-            }
-            Returns: Json
-          }
-        | {
-            Args: {
-              p_completion_year: string
-              p_date_of_birth?: string
-              p_index_no: string
-              p_school_id: number
-            }
-            Returns: Json
-          }
-      retrieve_admission_token:
-        | {
-            Args: { p_date_of_birth: string; p_index_no: string }
-            Returns: Json
-          }
-        | {
-            Args: { p_date_of_birth: string; p_index_no: string }
-            Returns: Json
-          }
-      verify_admission_token: {
-        Args: { p_index_no: string; p_token: string }
-        Returns: Json
-      }
-      verify_school_login: {
-        Args: { p_code: string; p_credentials: string; p_school_id: number }
-        Returns: Json
-      }
+      update_user_referrals_count: { Args: never; Returns: undefined }
     }
     Enums: {
       [_ in never]: never
